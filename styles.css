@@ -522,3 +522,11 @@ body.cvi-dark .choice-card.card-scan-focus {
   .choice-grid { gap: 12px; }
   .choice-card { height: 42vh; padding: 0.75rem; }
 }
+/* Lock main page behind open drawer and force drawer above sticky topbar */
+body.drawer-open .teacher-hub {
+  pointer-events: none;
+  user-select: none;
+}
+.backdrop { z-index: 200; }
+.drawer { z-index: 210; isolation: isolate; }
+.modal { z-index: 300; }
