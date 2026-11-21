@@ -608,13 +608,17 @@
           window.ReadingApp.Reports.renderDashboard();
         }
       },
-      openDrawer() {
+openDrawer() {
         document.getElementById('drawer-profiles').classList.remove('hidden');
         document.getElementById('drawer-backdrop').classList.remove('hidden');
+        document.getElementById('teacher-hub')?.setAttribute('inert', '');
+        document.body.classList.add('drawer-open');
       },
       closeDrawer() {
         document.getElementById('drawer-profiles').classList.add('hidden');
         document.getElementById('drawer-backdrop').classList.add('hidden');
+        document.getElementById('teacher-hub')?.removeAttribute('inert');
+        document.body.classList.remove('drawer-open');
       }
     };
 
@@ -629,6 +633,7 @@
       document.getElementById('drawer-backdrop').addEventListener('click', () => window.ReadingApp.closeDrawer());
 
       document.getElementById('btn-toggle-cvi').addEventListener('click', () => {
+        if (document.body.classList.contains('drawer-open')) return;
         document.body.classList.toggle('cvi-dark');
       });
 
