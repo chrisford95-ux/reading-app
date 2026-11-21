@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ClearRead AAC — Non-Verbal Phonics &amp; Decoding</title>
+  <!-- Single-story classroom typography (Andika & Lexend) with offline system fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="font-andika">
+
+  <!-- ==================== DIAGNOSTIC ERROR BANNER ==================== -->
+  <div id="diagnostic-banner" class="diagnostic-banner hidden" role="alert">
+    <div class="diagnostic-content">
+      <strong>Diagnostic Notice:</strong>
+      <span id="diagnostic-message"></span>
+    </div>
+    <div class="diagnostic-actions">
+      <button id="btn-copy-error" class="btn btn-sm btn-outline">Copy Error Details</button>
+      <button id="btn-dismiss-error" class="btn btn-sm btn-ghost" aria-label="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- ==================== TEACHER HUB SHELL ==================== -->
+  <div id="teacher-hub" class="teacher-hub">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">CR</span>
+          <span class="brand-title">ClearRead</span>
+        </div>
+        <button id="btn-profile-switcher" class="profile-pill" title="Switch student or adjust AAC settings">
+          <span id="active-student-dot" class="avatar-dot" style="background:#2563EB;"></span>
+          <span id="active-student-code" class="pill-code">JM</span>
+          <span class="pill-sep">•</span>
+          <span id="active-student-stage" class="pill-stage">Stage 6</span>
+          <span class="pill-caret">▾</span>
+        </button>
+      </div>
+
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <button class="nav-tab active" data-tab="lessons">Lessons</button>
+        <button class="nav-tab" data-tab="builder">AI Lesson Builder</button>
+        <button class="nav-tab" data-tab="reports">IEP Reports</button>
+      </nav>
+
+      <div class="topbar-right">
+        <button id="btn-toggle-cvi" class="btn btn-sm btn-outline" title="Toggle CVI High-Contrast Dark Mode">
+          CVI Contrast
+        </button>
+        <button id="btn-backup-quick" class="btn btn-sm btn-outline" title="Export or restore full backup">
+          Backup
+        </button>
+      </div>
+    </header>
+
+    <main class="hub-main">
+      <!-- ==================== TAB 1: LESSONS LIBRARY ==================== -->
+      <section id="tab-lessons" class="tab-panel active">
+        <div class="panel-header">
+          <div>
+            <h1>Lesson Library</h1>
+            <p class="subtitle">Select a lesson to launch in distraction-free Student Mode or print its opaque Teacher Key.</p>
+          </div>
+          <div class="header-actions">
+            <button id="btn-import-lesson-file" class="btn btn-outline">Import Lesson (.json)</button>
+            <input type="file" id="input-import-lesson-file" accept=".json" class="hidden" />
+          </div>
+        </div>
+
+        <div class="session-toolbar card">
+          <div class="toolbar-group">
+            <label for="filter-lesson-stage">Phonics Stage</label>
+            <select id="filter-lesson-stage">
+              <option value="all">All 8 Stages</option>
+              <option value="stage_1_letters">Stage 1: Letter-Sound</option>
+              <option value="stage_2_cvc_families">Stage 2: CVC Word Families</option>
+              <option value="stage_3_cvc_pairs">Stage 3: CVC Minimal Pairs</option>
+              <option value="stage_4_digraphs">Stage 4: Digraphs</option>
+              <option value="stage_5_blends">Stage 5: Blends</option>
+              <option value="stage_6_cvce">Stage 6: CVCe Silent-E</option>
+              <option value="stage_7_vowel_teams">Stage 7: Vowel Teams &amp; R-Controlled</option>
+              <option value="stage_8_passages">Stage 8: Multisyllabic &amp; Passages</option>
+            </select>
+          </div>
+
+          <div class="toolbar-group">
+            <label for="session-run-mode">Session Mode</label>
+            <select id="session-run-mode">
+              <option value="practice">Practice (Dim + Green Hint after 2 misses)</option>
+              <option value="assessment">Assessment (Clean 1st-touch logging)</option>
+            </select>
+          </div>
+
+          <div class="toolbar-checks">
+            <label class="check-inline"><input type="checkbox" id="opt-shuffle-items" checked /> Shuffle Order</label>
+            <label class="check-inline"><input type="checkbox" id="opt-shuffle-cards" checked /> Shuffle Cards</label>
+            <label class="check-inline"><input type="checkbox" id="opt-show-progress" checked /> Progress Bar</label>
+          </div>
+        </div>
+
+        <div id="lesson-library-grid" class="lesson-grid">
+          <!-- Populated by data.js in Step 2 -->
+          <div class="card empty-state-card">
+            <h3>Step 1 Layout Active</h3>
+            <p>Your repository and UI shell are live. Add <code>data.js</code> in Step 2 to load the 8 starter phonics lessons and anonymized student profiles.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: HYBRID AI LESSON BUILDER ==================== -->
+      <section id="tab-builder" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h1>Hybrid AI Lesson Builder</h1>
+            <p class="subtitle">Lock in structured-literacy minimal pairs via dropdowns while tailoring content to student interests.</p>
+          </div>
+        </div>
+
+        <div class="builder-grid">
+          <div class="card">
+            <h2>1. Configure Lesson Parameters</h2>
+            <div class="form-grid">
+              <div class="field">
+                <label for="builder-stage">Target Phonics Stage</label>
+                <select id="builder-stage">
+                  <option value="stage_1_letters">Stage 1: Letter-Sound &amp; Phonemic Awareness</option>
+                  <option value="stage_2_cvc_families">Stage 2: VC &amp; CVC Word Families</option>
+                  <option value="stage_3_cvc_pairs">Stage 3: CVC Minimal Pairs (Medial/Final)</option>
+                  <option value="stage_4_digraphs">Stage 4: Consonant Digraphs (sh, ch, th, wh, ck)</option>
+                  <option value="stage_5_blends">Stage 5: Consonant Blends (CCVC/CVCC)</option>
+                  <option value="stage_6_cvce" selected>Stage 6: CVCe Silent-E Long Vowels</option>
+                  <option value="stage_7_vowel_teams">Stage 7: Vowel Teams &amp; R-Controlled</option>
+                  <option value="stage_8_passages">Stage 8: Multisyllabic &amp; Decodable Passages</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="builder-modality">Task Modality</label>
+                <select id="builder-modality">
+                  <option value="hybrid_auto">Hybrid Auto (Visual nouns + x73 code words)</option>
+                  <option value="teacher_spoken_only">Teacher-Read Code Only (x73 + 3 words)</option>
+                  <option value="independent_visual_only">Independent Visual Only (Pictures + Text)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="builder-count">Item Count</label>
+                <select id="builder-count">
+                  <option value="5">5 Items (Quick Probe)</option>
+                  <option value="10" selected>10 Items (Standard Session)</option>
+                  <option value="15">15 Items (Extended Practice)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="builder-interest">Student Interest / Content Theme</label>
+                <input type="text" id="builder-interest" placeholder="e.g., monster trucks, baking, sea turtles, space" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="builder-notes">Optional Focus Notes (e.g., specific graphemes or sight words)</label>
+              <input type="text" id="builder-notes" placeholder="Optional: emphasize long-a and long-i patterns" />
+            </div>
+
+            <div class="button-row">
+              <button id="btn-copy-prompt" class="btn btn-primary">Copy AI Prompt to Clipboard</button>
+            </div>
+
+            <details class="byok-drawer">
+              <summary>Optional: 1-Click Generation via Your Own API Key (BYOK)</summary>
+              <div class="byok-body">
+                <p class="hint">Stored only in this browser. Leave blank to use the free copy-paste workflow with any chatbot.</p>
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="byok-provider">Provider</label>
+                    <select id="byok-provider">
+                      <option value="gemini">Google Gemini (Free Tier)</option>
+                      <option value="openai">OpenAI Compatible</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="byok-api-key">API Key</label>
+                    <input type="password" id="byok-api-key" placeholder="Paste API key..." />
+                  </div>
+                </div>
+                <button id="btn-generate-api" class="btn btn-outline">Generate Lesson Directly</button>
+              </div>
+            </details>
+
+            <div class="field" style="margin-top:1rem;">
+              <label for="generated-prompt-preview">Generated Master Prompt Preview</label>
+              <textarea id="generated-prompt-preview" rows="5" readonly placeholder="Prompt will appear here in Step 3 (builder.js)..."></textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>2. Paste AI JSON &amp; Validate</h2>
+            <p class="hint">Paste the raw JSON returned by your AI tool. The app automatically sanitizes opaque codes (e.g., <code>x73</code>) and verifies minimal-pair structure.</p>
+            <div class="field">
+              <textarea id="builder-json-input" rows="11" placeholder='{ "lessonMeta": { ... }, "items": [ ... ] }'></textarea>
+            </div>
+            <div class="button-row">
+              <button id="btn-validate-json" class="btn btn-primary">Validate &amp; Resolve Visuals</button>
+              <button id="btn-clear-json" class="btn btn-ghost">Clear</button>
+            </div>
+            <div id="builder-validation-status" class="status-box hidden"></div>
+          </div>
+        </div>
+
+        <!-- Visual Preflight & Swap Gate (Populated in Step 4: visuals.js) -->
+        <section id="preflight-section" class="card hidden" style="margin-top:1.5rem;">
+          <div class="panel-header">
+            <div>
+              <h2>3. Visual Preflight &amp; Swap Gate</h2>
+              <p class="subtitle">Verify each picture before saving. Click any image to swap alternatives, upload a photo, or flip to a code-cued item.</p>
+            </div>
+            <div class="header-actions">
+              <button id="btn-open-teacher-key" class="btn btn-outline">Preview / Print Teacher Key</button>
+              <button id="btn-save-lesson" class="btn btn-success">Save Lesson Offline</button>
+            </div>
+          </div>
+          <div id="preflight-grid" class="preflight-grid"></div>
+        </section>
+      </section>
+
+      <!-- ==================== TAB 3: LONGITUDINAL IEP REPORTS ==================== -->
+      <section id="tab-reports" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h1>Longitudinal IEP Progress Reports</h1>
+            <p class="subtitle">Track independent vs. prompted mastery, modality splits, and error patterns across sessions.</p>
+          </div>
+          <div class="header-actions">
+            <button id="btn-export-session-csv" class="btn btn-outline">Export Session CSV</button>
+            <button id="btn-export-trial-csv" class="btn btn-outline">Export Raw Trials CSV</button>
+            <button id="btn-print-report" class="btn btn-primary">Print IEP Summary</button>
+          </div>
+        </div>
+
+        <div class="session-toolbar card">
+          <div class="toolbar-group">
+            <label for="report-filter-stage">Stage Filter</label>
+            <select id="report-filter-stage">
+              <option value="all">All Stages</option>
+              <option value="stage_1_letters">Stage 1</option>
+              <option value="stage_2_cvc_families">Stage 2</option>
+              <option value="stage_3_cvc_pairs">Stage 3</option>
+              <option value="stage_4_digraphs">Stage 4</option>
+              <option value="stage_5_blends">Stage 5</option>
+              <option value="stage_6_cvce">Stage 6</option>
+              <option value="stage_7_vowel_teams">Stage 7</option>
+              <option value="stage_8_passages">Stage 8</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label for="report-filter-modality">Modality</label>
+            <select id="report-filter-modality">
+              <option value="all">All Modalities</option>
+              <option value="teacher_spoken_to_word">Code-Cued (Teacher Read)</option>
+              <option value="visual">Independent Visual</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label for="report-filter-days">Window</label>
+            <select id="report-filter-days">
+              <option value="30">Last 30 Days</option>
+              <option value="90" selected>Current IEP Quarter (90 Days)</option>
+              <option value="365">Full School Year</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="card kpi-card">
+            <span class="kpi-label">Independent 1st-Touch</span>
+            <strong id="kpi-independent-acc" class="kpi-value">--%</strong>
+            <span id="kpi-independent-sub" class="kpi-sub">0 / 0 unprompted trials</span>
+          </div>
+          <div class="card kpi-card">
+            <span class="kpi-label">With Prompting</span>
+            <strong id="kpi-supported-acc" class="kpi-value">--%</strong>
+            <span id="kpi-supported-sub">Includes [P] flagged trials</span>
+          </div>
+          <div class="card kpi-card">
+            <span class="kpi-label">Motor Slips Excluded</span>
+            <strong id="kpi-motor-slips" class="kpi-value">0</strong>
+            <span class="kpi-sub">Logged via [R] repeat hotkey</span>
+          </div>
+          <div class="card kpi-card">
+            <span class="kpi-label">Median Latency</span>
+            <strong id="kpi-median-latency" class="kpi-value">--s</strong>
+            <span class="kpi-sub">Selection speed trend</span>
+          </div>
+        </div>
+
+        <div class="reports-grid">
+          <div class="card">
+            <h2>Mastery Trajectory vs. IEP Goal</h2>
+            <div id="report-trajectory-chart" class="chart-box">
+              <p class="hint">Complete a session or add <code>reports.js</code> in Step 6 to view trajectory charts.</p>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Modality Split &amp; Error Patterns</h2>
+            <div id="report-modality-split" class="modality-bars"></div>
+            <hr class="divider" />
+            <div id="report-error-breakdown" class="error-breakdown"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem;">
+          <div class="panel-header">
+            <h2>Auto-Drafted IEP Progress Note</h2>
+            <button id="btn-copy-narrative" class="btn btn-sm btn-outline">Copy Note</button>
+          </div>
+          <blockquote id="report-iep-narrative" class="iep-narrative">
+            No completed sessions logged for this student yet.
+          </blockquote>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem;">
+          <h2>Session History</h2>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Lesson</th>
+                  <th>Stage</th>
+                  <th>Input Mode</th>
+                  <th>Independent</th>
+                  <th>Supported</th>
+                  <th>Slips</th>
+                  <th>Top Error Tag</th>
+                </tr>
+              </thead>
+              <tbody id="report-sessions-table">
+                <tr><td colspan="8" class="hint">No sessions recorded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== DISTRACTION-FREE STUDENT PLAYER ==================== -->
+  <div id="student-player-view" class="student-player hidden" aria-live="polite">
+    <div class="player-topbar">
+      <button id="player-item-code" class="item-code-tag" title="Hold 3 seconds to exit session">x73</button>
+      <div class="player-micro-controls">
+        <span id="badge-prompted" class="micro-badge badge-amber hidden">P</span>
+        <span id="badge-lockout" class="micro-badge badge-slate hidden">⏸</span>
+        <button id="btn-player-repeat" class="micro-btn" title="Motor Slip / Repeat &amp; Reshuffle (Hotkey: R)">↺</button>
+        <button id="btn-player-prompt" class="micro-btn" title="Toggle Prompted Trial (Hotkey: P)">P</button>
+        <button id="btn-player-exit" class="micro-btn" title="Exit Session (Hotkey: Esc)">✕</button>
+      </div>
+    </div>
+
+    <div id="player-prompt-area" class="player-prompt-area hidden"></div>
+
+    <div id="player-choice-grid" class="choice-grid" role="group" aria-label="Reading choices">
+      <!-- 3 choice cards rendered dynamically by player.js in Step 5 -->
+    </div>
+
+    <div id="player-advance-bar" class="player-advance-bar hidden">
+      <button id="btn-player-next" class="btn btn-primary btn-lg">Next Item (Space)</button>
+    </div>
+
+    <div id="player-progress-track" class="progress-track" aria-label="Session progress"></div>
+  </div>
+
+  <!-- ==================== SLIDE-OVER: STUDENT PROFILES & ACCESSIBILITY ==================== -->
+  <div id="drawer-backdrop" class="backdrop hidden"></div>
+  <aside id="drawer-profiles" class="drawer hidden" aria-label="Student Profiles and Accessibility">
+    <div class="drawer-header">
+      <h2>Student Profiles (Zero-PII)</h2>
+      <button id="btn-close-drawer" class="btn btn-ghost">✕</button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="profile-list-header">
+        <span class="section-label">Active Classroom Profiles</span>
+        <button id="btn-new-profile" class="btn btn-sm btn-primary">+ New Code</button>
+      </div>
+      <div id="profile-list" class="profile-list"></div>
+
+      <hr class="divider" />
+
+      <form id="profile-settings-form" class="settings-form">
+        <h3>Selected Profile &amp; AAC Access</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="prof-code">Student Code (2–4 chars)</label>
+            <input type="text" id="prof-code" maxlength="4" placeholder="JM" required />
+          </div>
+          <div class="field">
+            <label for="prof-color">Avatar Color</label>
+            <input type="color" id="prof-color" value="#2563EB" />
+          </div>
+          <div class="field">
+            <label for="prof-stage">Current Stage</label>
+            <select id="prof-stage">
+              <option value="stage_1_letters">Stage 1</option>
+              <option value="stage_2_cvc_families">Stage 2</option>
+              <option value="stage_3_cvc_pairs">Stage 3</option>
+              <option value="stage_4_digraphs">Stage 4</option>
+              <option value="stage_5_blends">Stage 5</option>
+              <option value="stage_6_cvce">Stage 6</option>
+              <option value="stage_7_vowel_teams">Stage 7</option>
+              <option value="stage_8_passages">Stage 8</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="prof-goal">IEP Goal Benchmark (%)</label>
+            <input type="number" id="prof-goal" min="50" max="100" value="80" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="prof-input-mode">Input Access Mode</label>
+          <select id="prof-input-mode">
+            <option value="direct_touch">Direct Touch / Mouse</option>
+            <option value="eye_gaze_dwell">Eye-Gaze Dwell</option>
+            <option value="scan_1_switch">1-Switch Auto Scan (Space/Enter)</option>
+            <option value="scan_2_switch">2-Switch Step Scan (Space=Move, Enter=Select)</option>
+          </select>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="prof-touch-trigger">Touch Trigger</label>
+            <select id="prof-touch-trigger">
+              <option value="on_release">Lift-to-Select (On Release)</option>
+              <option value="on_press">Immediate (On Press)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="prof-lockout">Post-Tap Lockout (ms)</label>
+            <input type="number" id="prof-lockout" min="0" max="3000" step="100" value="1000" />
+          </div>
+          <div class="field">
+            <label for="prof-dwell-ms">Dwell Duration (ms)</label>
+            <input type="number" id="prof-dwell-ms" min="400" max="3000" step="100" value="1100" />
+          </div>
+          <div class="field">
+            <label for="prof-dwell-grace">Dwell Grace Window (ms)</label>
+            <input type="number" id="prof-dwell-grace" min="0" max="600" step="50" value="250" />
+          </div>
+          <div class="field">
+            <label for="prof-scan-ms">Scan Interval (ms)</label>
+            <input type="number" id="prof-scan-ms" min="800" max="5000" step="200" value="2000" />
+          </div>
+          <div class="field">
+            <label for="prof-scan-loops">Max Auto-Scan Loops</label>
+            <input type="number" id="prof-scan-loops" min="1" max="10" value="3" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="prof-font">Typography</label>
+            <select id="prof-font">
+              <option value="Andika">Andika (Single-story a/g)</option>
+              <option value="Lexend">Lexend (Reading Fluency)</option>
+              <option value="system">System Sans-Serif</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="prof-advance-mode">Item Pacing</label>
+            <select id="prof-advance-mode">
+              <option value="teacher_manual">Teacher Manual Advance</option>
+              <option value="auto">Auto-Advance (1.5s)</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="check-inline" style="margin:0.75rem 0;">
+          <input type="checkbox" id="prof-cvi" /> CVI High-Contrast Dark Theme
+        </label>
+
+        <div class="button-row">
+          <button type="submit" class="btn btn-primary">Save Profile Settings</button>
+          <button type="button" id="btn-delete-profile" class="btn btn-ghost text-danger">Delete</button>
+        </div>
+      </form>
+
+      <hr class="divider" />
+
+      <div class="backup-box">
+        <h3>Local Data Backup</h3>
+        <p id="backup-status-text" class="hint">Export all profiles, custom lessons, and IEP logs into one restorable file.</p>
+        <div class="button-row">
+          <button id="btn-export-backup" class="btn btn-outline btn-sm">Export Full Backup (.json)</button>
+          <button id="btn-import-backup" class="btn btn-outline btn-sm">Restore Backup</button>
+          <input type="file" id="input-import-backup" accept=".json" class="hidden" />
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MODAL: PRINTABLE TEACHER KEY ==================== -->
+  <div id="modal-teacher-key" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header no-print">
+        <h2>Alphabetized Teacher Key</h2>
+        <button class="btn btn-ghost modal-close" data-close="modal-teacher-key">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="hint no-print">Sorted alphabetically by opaque screen code so you can look up randomized items instantly.</p>
+        <pre id="teacher-key-output" class="teacher-key-pre"></pre>
+      </div>
+      <div class="modal-footer no-print">
+        <button id="btn-copy-key" class="btn btn-outline">Copy Key Text</button>
+        <button id="btn-print-key" class="btn btn-primary">Print Half-Sheet Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: VISUAL PREFLIGHT SWAP PICKER ==================== -->
+  <div id="modal-image-picker" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="image-picker-title">Swap Visual</h2>
+        <button class="btn btn-ghost modal-close" data-close="modal-image-picker">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="image-picker-search">Search ARASAAC / OpenMoji Keyword</label>
+          <div class="inline-search">
+            <input type="text" id="image-picker-search" placeholder="e.g., baseball bat" />
+            <button id="btn-picker-search" class="btn btn-outline">Search</button>
+          </div>
+        </div>
+        <div id="image-picker-results" class="picker-grid"></div>
+        <hr class="divider" />
+        <div class="field">
+          <label for="image-picker-upload">Or Upload Custom Photo (Offline Base64)</label>
+          <input type="file" id="image-picker-upload" accept="image/*" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-flip-to-code" class="btn btn-outline">Convert to Code-Cued (x73) Item</button>
+        <button class="btn btn-ghost modal-close" data-close="modal-image-picker">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: POST-SESSION SUMMARY ==================== -->
+  <div id="modal-session-summary" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h2>Session Complete</h2>
+        <button class="btn btn-ghost modal-close" data-close="modal-session-summary">✕</button>
+      </div>
+      <div id="session-summary-body" class="modal-body"></div>
+      <div class="modal-footer">
+        <button id="btn-summary-to-reports" class="btn btn-outline">Open Longitudinal IEP Report</button>
+        <button class="btn btn-primary modal-close" data-close="modal-session-summary">Back to Lessons</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: SAFE EARLY EXIT ==================== -->
+  <div id="modal-early-exit" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h2>End Session Early?</h2>
+      </div>
+      <div class="modal-body">
+        <p>You can save the trials completed so far to this student's IEP log, or discard this partial run.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-exit-resume" class="btn btn-ghost">Resume</button>
+        <button id="btn-exit-discard" class="btn btn-outline text-danger">Discard</button>
+        <button id="btn-exit-save" class="btn btn-primary">Save &amp; Finish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CORE BOOTSTRAP & MODULE HOOKS ==================== -->
+  <script>
+    // Shared global namespace so modules work both on GitHub Pages and offline file://
+    window.ReadingApp = window.ReadingApp || {
+      modulesLoaded: {},
+      showError(msg, detail) {
+        const banner = document.getElementById('diagnostic-banner');
+        const textEl = document.getElementById('diagnostic-message');
+        if (!banner || !textEl) return;
+        textEl.textContent = msg;
+        banner.dataset.detail = detail || msg;
+        banner.classList.remove('hidden');
+      },
+      switchTab(tabName) {
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+          panel.classList.toggle('active', panel.id === 'tab-' + tabName);
+        });
+        if (tabName === 'reports' && window.ReadingApp.Reports) {
+          window.ReadingApp.Reports.renderDashboard();
+        }
+      },
+      openDrawer() {
+        document.getElementById('drawer-profiles').classList.remove('hidden');
+        document.getElementById('drawer-backdrop').classList.remove('hidden');
+      },
+      closeDrawer() {
+        document.getElementById('drawer-profiles').classList.add('hidden');
+        document.getElementById('drawer-backdrop').classList.add('hidden');
+      }
+    };
+
+    // Basic Shell Interactions (active immediately in Step 1)
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', () => window.ReadingApp.switchTab(btn.dataset.tab));
+      });
+      document.getElementById('btn-profile-switcher').addEventListener('click', () => window.ReadingApp.openDrawer());
+      document.getElementById('btn-backup-quick').addEventListener('click', () => window.ReadingApp.openDrawer());
+      document.getElementById('btn-close-drawer').addEventListener('click', () => window.ReadingApp.closeDrawer());
+      document.getElementById('drawer-backdrop').addEventListener('click', () => window.ReadingApp.closeDrawer());
+
+      document.getElementById('btn-toggle-cvi').addEventListener('click', () => {
+        document.body.classList.toggle('cvi-dark');
+      });
+
+      document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = document.getElementById(btn.dataset.close);
+          if (target) target.classList.add('hidden');
+        });
+      });
+
+      document.getElementById('btn-dismiss-error').addEventListener('click', () => {
+        document.getElementById('diagnostic-banner').classList.add('hidden');
+      });
+      document.getElementById('btn-copy-error').addEventListener('click', () => {
+        const detail = document.getElementById('diagnostic-banner').dataset.detail || '';
+        navigator.clipboard.writeText(detail);
+      });
+    });
+
+    window.addEventListener('error', (e) => {
+      if (e.message) window.ReadingApp.showError(e.message, `${e.filename}:${e.lineno} - ${e.message}`);
+    });
+  </script>
+
+  <!-- Step 2 to Step 6 modules (loaded gracefully as you add each file) -->
+  <script defer src="data.js"></script>
+  <script defer src="builder.js"></script>
+  <script defer src="visuals.js"></script>
+  <script defer src="player.js"></script>
+  <script defer src="reports.js"></script>
+</body>
+</html>
