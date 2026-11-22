@@ -481,10 +481,6 @@
           </div>
         </div>
 
-        <label class="check-inline" style="margin:0.75rem 0;">
-          <input type="checkbox" id="prof-cvi" /> CVI High-Contrast Dark Theme
-        </label>
-
         <div class="button-row">
           <button type="submit" class="btn btn-primary">Save Profile Settings</button>
           <button type="button" id="btn-delete-profile" class="btn btn-ghost text-danger">Delete</button>
@@ -633,8 +629,12 @@ openDrawer() {
       document.getElementById('drawer-backdrop').addEventListener('click', () => window.ReadingApp.closeDrawer());
 
       document.getElementById('btn-toggle-cvi').addEventListener('click', () => {
-        if (document.body.classList.contains('drawer-open')) return;
-        document.body.classList.toggle('cvi-dark');
+          if (document.body.classList.contains('drawer-open')) return;
+          const isDark = document.body.classList.toggle('cvi-dark');
+          if (window.ReadingApp.Data) {
+           window.ReadingApp.Data.state.cviDarkMode = isDark;
+           window.ReadingApp.Data.saveState();
+          }
       });
 
       document.querySelectorAll('.modal-close').forEach(btn => {
