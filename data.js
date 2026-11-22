@@ -138,23 +138,24 @@
       currentStageId: stageId || 'stage_6_cvce',
       targetMasteryPct: 80,
       accessConfig: { inputMode: 'direct_touch', touchTrigger: 'on_release', postTapLockoutMs: 1000, dwellDurationMs: 1100, dwellGraceWindowMs: 250, scanIntervalMs: 2000, maxScanLoops: 3 },
-      visualConfig: { fontFamily: 'Andika', highContrastDark: false },
+      visualConfig: { fontFamily: 'Andika' },
       pacingConfig: { advanceMode: 'teacher_manual', autoAdvanceDelayMs: 1500 },
       createdAt: new Date().toISOString().slice(0, 10)
     };
   }
 
-  function loadInitialState() {
+function loadInitialState() {
     let saved = null;
     try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) saved = JSON.parse(raw); }
     catch (err) { App.showError('Could not read saved data; starting fresh.', err.message); }
     if (saved && Array.isArray(saved.profiles) && saved.profiles.length > 0) {
       if (!Array.isArray(saved.lessons) || !saved.lessons.length) saved.lessons = JSON.parse(JSON.stringify(STARTER_LESSONS));
       if (!Array.isArray(saved.sessions)) saved.sessions = [];
+      saved.cviDarkMode = Boolean(saved.cviDarkMode);
       return saved;
     }
     const def = createDefaultProfile('JM', '#2563EB', 'stage_6_cvce');
-    return { version: 1, profiles: [def], activeProfileId: def.studentId, lessons: JSON.parse(JSON.stringify(STARTER_LESSONS)), sessions: [], lastBackupAt: null };
+    return { version: 1, profiles: [def], activeProfileId: def.studentId, lessons: JSON.parse(JSON.stringify(STARTER_LESSONS)), sessions: [], lastBackupAt: null, cviDarkMode: false };
   }
 
   const state = loadInitialState();
@@ -172,7 +173,6 @@
     if (!profile) return;
     document.body.classList.remove('font-andika', 'font-lexend', 'font-system');
     document.body.classList.add('font-' + (profile.visualConfig?.fontFamily || 'Andika').toLowerCase());
-    document.body.classList.toggle('cvi-dark', Boolean(profile.visualConfig?.highContrastDark));
     const dot = document.getElementById('active-student-dot');
     const code = document.getElementById('active-student-code');
     const stage = document.getElementById('active-student-stage');
@@ -301,8 +301,6 @@
     setV('prof-scan-loops', active.accessConfig?.maxScanLoops ?? 3);
     setV('prof-font', active.visualConfig?.fontFamily || 'Andika');
     setV('prof-advance-mode', active.pacingConfig?.advanceMode || 'teacher_manual');
-    const cvi = document.getElementById('prof-cvi');
-    if (cvi) cvi.checked = Boolean(active.visualConfig?.highContrastDark);
 
     const bTxt = document.getElementById('backup-status-text');
     if (bTxt) {
@@ -315,29 +313,30 @@
   }
 
   /* -------------------- DOM EVENTS -------------------- */
-  function initDataEvents() {
+ function initDataEvents() {
+    document.body.classList.toggle('cvi-dark', Boolean(state.cviDarkMode));
     applyProfileTheme(getActiveProfile());
     renderProfiles();
     renderLibrary();
 
     document.getElementById('filter-lesson-stage')?.addEventListener('change', renderLibrary);
-    document.getElementById('btn-toggle-cvi')?.addEventListener('click', () => {
-      const a = getActiveProfile();
-      if (a) { a.visualConfig.highContrastDark = document.body.classList.contains('cvi-dark'); saveState(); renderProfiles(); }
-    });
 
     document.getElementById('btn-new-profile')?.addEventListener('click', () => {
       const code = prompt('Enter anonymized student code (2–4 chars, e.g., KL or S-02):');
       if (!code || !code.trim()) return;
       const colors = ['#2563EB', '#16A34A', '#9333EA', '#EA580C', '#0891B2', '#DB2777'];
       const np = createDefaultProfile(code.trim(), colors[state.profiles.length % colors.length], 'stage_2_cvc_families');
-      state.profiles.push(np); state.activeProfileId = np.studentId;
-      saveState(); renderProfiles(); applyProfileTheme(np);
+      state.profiles.push(np);
+      state.activeProfileId = np.studentId;
+      saveState();
+      renderProfiles();
+      applyProfileTheme(np);
     });
 
     document.getElementById('profile-settings-form')?.addEventListener('submit', e => {
       e.preventDefault();
-      const a = getActiveProfile(); if (!a) return;
+      const a = getActiveProfile();
+      if (!a) return;
       a.displayCode = (document.getElementById('prof-code').value || 'STU').trim().toUpperCase().slice(0, 4);
       a.avatarColor = document.getElementById('prof-color').value;
       a.currentStageId = document.getElementById('prof-stage').value;
@@ -351,9 +350,12 @@
         scanIntervalMs: Number(document.getElementById('prof-scan-ms').value) || 2000,
         maxScanLoops: Number(document.getElementById('prof-scan-loops').value) || 3
       };
-      a.visualConfig = { fontFamily: document.getElementById('prof-font').value, highContrastDark: document.getElementById('prof-cvi').checked };
+      a.visualConfig = { fontFamily: document.getElementById('prof-font').value };
       a.pacingConfig = { advanceMode: document.getElementById('prof-advance-mode').value, autoAdvanceDelayMs: 1500 };
-      saveState(); applyProfileTheme(a); renderProfiles(); App.closeDrawer();
+      saveState();
+      applyProfileTheme(a);
+      renderProfiles();
+      App.closeDrawer();
     });
 
     document.getElementById('btn-delete-profile')?.addEventListener('click', () => {
@@ -362,47 +364,67 @@
       if (!confirm(`Delete profile "${a.displayCode}"?`)) return;
       state.profiles = state.profiles.filter(p => p.studentId !== a.studentId);
       state.activeProfileId = state.profiles[0].studentId;
-      saveState(); renderProfiles(); applyProfileTheme(getActiveProfile());
+      saveState();
+      renderProfiles();
+      applyProfileTheme(getActiveProfile());
     });
 
     document.getElementById('btn-export-backup')?.addEventListener('click', () => {
-      state.lastBackupAt = new Date().toISOString(); saveState(); renderProfiles();
+      state.lastBackupAt = new Date().toISOString();
+      saveState();
+      renderProfiles();
       downloadJson(state, `clearread_backup_${state.lastBackupAt.slice(0, 10)}.json`);
     });
 
     const bIn = document.getElementById('input-import-backup');
     document.getElementById('btn-import-backup')?.addEventListener('click', () => bIn?.click());
     bIn?.addEventListener('change', e => {
-      const f = e.target.files?.[0]; if (!f) return;
+      const f = e.target.files?.[0];
+      if (!f) return;
       const r = new FileReader();
       r.onload = () => {
         try {
           const p = JSON.parse(r.result);
           if (!Array.isArray(p.profiles) || !Array.isArray(p.lessons)) throw new Error('Invalid ClearRead backup file.');
-          state.profiles = p.profiles; state.activeProfileId = p.activeProfileId || p.profiles[0].studentId;
-          state.lessons = p.lessons; state.sessions = Array.isArray(p.sessions) ? p.sessions : [];
+          state.profiles = p.profiles;
+          state.activeProfileId = p.activeProfileId || p.profiles[0].studentId;
+          state.lessons = p.lessons;
+          state.sessions = Array.isArray(p.sessions) ? p.sessions : [];
           state.lastBackupAt = p.lastBackupAt || new Date().toISOString();
-          saveState(); applyProfileTheme(getActiveProfile()); renderProfiles(); renderLibrary();
+          state.cviDarkMode = Boolean(p.cviDarkMode);
+          document.body.classList.toggle('cvi-dark', state.cviDarkMode);
+          saveState();
+          applyProfileTheme(getActiveProfile());
+          renderProfiles();
+          renderLibrary();
           if (App.Reports) App.Reports.renderDashboard();
           alert('Backup restored successfully.');
-        } catch (err) { App.showError('Backup restore failed: ' + err.message); }
+        } catch (err) {
+          App.showError('Backup restore failed: ' + err.message);
+        }
       };
-      r.readAsText(f); e.target.value = '';
+      r.readAsText(f);
+      e.target.value = '';
     });
 
     const lIn = document.getElementById('input-import-lesson-file');
     document.getElementById('btn-import-lesson-file')?.addEventListener('click', () => lIn?.click());
     lIn?.addEventListener('change', e => {
-      const f = e.target.files?.[0]; if (!f) return;
+      const f = e.target.files?.[0];
+      if (!f) return;
       const r = new FileReader();
       r.onload = () => {
         try {
           const lesson = JSON.parse(r.result);
           if (!lesson.lessonMeta || !Array.isArray(lesson.items)) throw new Error('Invalid lesson JSON.');
-          App.Data.saveLesson(lesson); alert(`Imported "${lesson.lessonMeta.title}".`);
-        } catch (err) { App.showError('Lesson import failed: ' + err.message); }
+          App.Data.saveLesson(lesson);
+          alert(`Imported "${lesson.lessonMeta.title}".`);
+        } catch (err) {
+          App.showError('Lesson import failed: ' + err.message);
+        }
       };
-      r.readAsText(f); e.target.value = '';
+      r.readAsText(f);
+      e.target.value = '';
     });
 
     document.getElementById('btn-copy-key')?.addEventListener('click', () => {
