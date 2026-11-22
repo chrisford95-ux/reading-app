@@ -28,10 +28,10 @@
   function generateSafeCode(used) {
     const letters = 'bcdfghjkmnprstvwxyz', digits = '2345678';
     for (let i = 0; i < 200; i++) {
-      const c = letters[Math.floor(Math.random() * letters.length)] + digits[Math.floor(Math.random() * digits.length)] + digits[Math.floor(Math.random() * digits.length)];
+      const c = letters[Math.floor(Math.random() * letters.length)] + digits[Math.floor(Math.random() * digits.length)];
       if (!used.has(c)) { used.add(c); return c; }
     }
-    return 'x73';
+    return 'k4';
   }
 
   /* -------------------- 22 OFFLINE STARTER SVGS -------------------- */
@@ -127,7 +127,7 @@
       mkItem('t28', 'passage_comprehension', "Silent Passage Comprehension -> bus", [mkChoice('bus', 1, null, 'bus'), mkChoice('boat', 0, 'comprehension_detail_error', 'boat'), mkChoice('bike', 0, 'comprehension_detail_error', 'bike')], { promptText: 'Sam got on the big yellow bus. The bus went past the park. What did Sam ride?' }),
       mkItem('v62', 'passage_comprehension', "Silent Passage Comprehension -> by the pond", [mkChoice('by the pond', 1), mkChoice('in the mud', 0, 'comprehension_detail_error'), mkChoice('on a rock', 0, 'comprehension_detail_error')], { promptText: 'The green frog sat by the pond in the rain. It did not jump in the mud. Where did the frog sit?' })
     ])
-  ];
+  ];STARTER_LESSONS.forEach(l => l.items.forEach(it => { it.code = it.code.slice(0, 2); })); 
 
   /* -------------------- STATE & PROFILES -------------------- */
   function createDefaultProfile(code, color, stageId) {
@@ -151,6 +151,13 @@ function loadInitialState() {
     if (saved && Array.isArray(saved.profiles) && saved.profiles.length > 0) {
       if (!Array.isArray(saved.lessons) || !saved.lessons.length) saved.lessons = JSON.parse(JSON.stringify(STARTER_LESSONS));
       if (!Array.isArray(saved.sessions)) saved.sessions = [];
+       saved.lessons.forEach(l => {
+        if (l.lessonMeta?.isStarter) {
+          (l.items || []).forEach(it => {
+            if (typeof it.code === 'string' && it.code.length === 3) it.code = it.code.slice(0, 2);
+          });
+        }
+      });
       saved.cviDarkMode = Boolean(saved.cviDarkMode);
       return saved;
     }
@@ -188,7 +195,7 @@ function loadInitialState() {
     const lines = [
       `TEACHER KEY: ${meta.title || 'Untitled Lesson'}`,
       `Stage: ${STAGE_META[meta.stageId]?.name || meta.stageId || 'Custom'} | Items: ${sorted.length}`,
-      '(Sorted alphabetically by opaque screen code for instant randomized lookup)',
+     '(Sorted alphabetically by 2-character Key Code for instant randomized lookup)',
       '--------------------------------------------------------------------------'
     ];
     sorted.forEach(item => {
@@ -443,7 +450,7 @@ function loadInitialState() {
       if (!lesson.lessonMeta.lessonId) lesson.lessonMeta.lessonId = 'les_' + Math.random().toString(36).slice(2, 9);
       const used = new Set();
       (lesson.items || []).forEach(it => {
-        if (!/^[bcdfghjkmnprstvwxyz][2-8]{2}$/.test(it.code || '') || used.has(it.code)) it.code = generateSafeCode(used);
+        if (!/^[bcdfghjkmnprstvwxyz][2-8]$/.test(it.code || '') || used.has(it.code)) it.code = generateSafeCode(used);
         else used.add(it.code);
       });
       const idx = state.lessons.findIndex(l => l.lessonMeta?.lessonId === lesson.lessonMeta.lessonId);
