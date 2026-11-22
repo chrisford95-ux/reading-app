@@ -51,9 +51,6 @@
         <button id="btn-toggle-cvi" class="btn btn-sm btn-outline" title="Toggle CVI High-Contrast Dark Mode">
           CVI Contrast
         </button>
-        <button id="btn-backup-quick" class="btn btn-sm btn-outline" title="Export or restore full backup">
-          Backup
-        </button>
       </div>
     </header>
 
@@ -140,9 +137,9 @@
 
               <div class="field">
                 <label for="builder-modality">Task Modality</label>
-                <select id="builder-modality">
-                  <option value="hybrid_auto">Hybrid Auto (Visual nouns + x73 code words)</option>
-                  <option value="teacher_spoken_only">Teacher-Read Code Only (x73 + 3 words)</option>
+                 <select id="builder-modality">
+                  <option value="hybrid_auto">Hybrid Auto (Visuals + Read-Aloud Key Codes)</option>
+                  <option value="teacher_spoken_only">Teacher Read-Aloud Only (Key Codes + 3 words)</option>
                   <option value="independent_visual_only">Independent Visual Only (Pictures + Text)</option>
                 </select>
               </div>
@@ -200,7 +197,7 @@
 
           <div class="card">
             <h2>2. Paste AI JSON &amp; Validate</h2>
-            <p class="hint">Paste the raw JSON returned by your AI tool. The app automatically sanitizes opaque codes (e.g., <code>x73</code>) and verifies minimal-pair structure.</p>
+            <p class="hint">Paste the raw JSON returned by your AI tool. The app automatically verifies minimal-pair structure and assigns 2-character Key Codes (e.g., <code>k4</code>, <code>m7</code>) for your Teacher Key.</p>
             <div class="field">
               <textarea id="builder-json-input" rows="11" placeholder='{ "lessonMeta": { ... }, "items": [ ... ] }'></textarea>
             </div>
@@ -353,7 +350,7 @@
   <!-- ==================== DISTRACTION-FREE STUDENT PLAYER ==================== -->
   <div id="student-player-view" class="student-player hidden" aria-live="polite">
     <div class="player-topbar">
-      <button id="player-item-code" class="item-code-tag" title="Hold 3 seconds to exit session">x73</button>
+      <button id="player-item-code" class="item-code-tag" title="Hold 3 seconds to exit session">k4</button>
       <div class="player-micro-controls">
         <span id="badge-prompted" class="micro-badge badge-amber hidden">P</span>
         <span id="badge-lockout" class="micro-badge badge-slate hidden">⏸</span>
@@ -542,7 +539,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button id="btn-flip-to-code" class="btn btn-outline">Convert to Code-Cued (x73) Item</button>
+        <button id="btn-flip-to-code" class="btn btn-outline">Convert to Teacher Read-Aloud Item</button>
         <button class="btn btn-ghost modal-close" data-close="modal-image-picker">Done</button>
       </div>
     </div>
@@ -624,7 +621,6 @@ openDrawer() {
         btn.addEventListener('click', () => window.ReadingApp.switchTab(btn.dataset.tab));
       });
       document.getElementById('btn-profile-switcher').addEventListener('click', () => window.ReadingApp.openDrawer());
-      document.getElementById('btn-backup-quick').addEventListener('click', () => window.ReadingApp.openDrawer());
       document.getElementById('btn-close-drawer').addEventListener('click', () => window.ReadingApp.closeDrawer());
       document.getElementById('drawer-backdrop').addEventListener('click', () => window.ReadingApp.closeDrawer());
 
