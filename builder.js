@@ -79,8 +79,7 @@ GLOBAL CLINICAL & VISUAL RULES:
    - "hybrid_auto": Route concrete nouns to "picture_to_word" or "word_to_picture"; route verbs/adjectives/abstract minimal pairs to "teacher_spoken_to_word".
 3. VISUAL DISTINCTNESS & SENSE HINTS: Never assign "word_to_picture" if 2+ choices look visually similar (e.g., cap/hat or mug/cup); switch those to "picture_to_word" or "teacher_spoken_to_word". Whenever an image is used, set "imageKeyword" to 1 concrete singular English noun and add "senseHint" (e.g., "baseball equipment") + "excludeHint" (e.g., "flying mammal") to disambiguate homographs.
 4. INTEREST INTEGRATION: Weave "${interest}" into targets or sentences ONLY when words strictly obey the Target Stage phonics scope.
-5. TEACHER CUE & CODES: Include "teacherScript" with target word, segmented phonemes, and context sentence. Assign each item a unique 3-char code (1 lowercase consonant + 2 digits, excluding l,1,o,0,i,q,9 — e.g., "x73", "k48").
-
+5. TEACHER CUE & KEY CODES: Include "teacherScript" with target word, segmented phonemes, and context sentence. Assign each item a unique 2-character Key Code (1 lowercase consonant + 1 digit, excluding l,1,o,0,i,q,9 — e.g., "k4", "m7").
 OUTPUT FORMAT:
 Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this schema:
 {
@@ -92,7 +91,7 @@ Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this sc
   },
   "items": [
     {
-      "code": "x73",
+      "code": "k4",
       "taskType": "picture_to_word",
       "promptText": null,
       "promptImageKeyword": "bat",
@@ -169,7 +168,7 @@ Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this sc
       }
 
       let code = String(rawItem.code || '').toLowerCase().trim();
-      if (!/^[bcdfghjkmnprstvwxyz][2-8]{2}$/.test(code) || usedCodes.has(code)) {
+      if (!/^[bcdfghjkmnprstvwxyz][2-8]$/.test(code) || usedCodes.has(code)) {
         code = App.Data.generateSafeCode(usedCodes);
         codeFixes++;
       } else {
@@ -221,7 +220,7 @@ Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this sc
       const visualNote = thumb
         ? `<img src="${thumb}" alt="${escapeHtml(target?.label)}" class="preflight-thumb" />`
         : `<div class="hint" style="padding:0.6rem;background:var(--surface);border-radius:6px;text-align:center;">${
-            item.taskType === 'teacher_spoken_to_word' ? 'Code-Cued Text Only (No Image)' : 'Visual lookup activates in Step 4 (visuals.js)'
+            item.taskType === 'teacher_spoken_to_word' ? 'Teacher Read-Aloud (Key Code Only)' : 'Visual lookup activates in Step 4 (visuals.js)'
           }</div>`;
 
       return `
