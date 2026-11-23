@@ -622,8 +622,9 @@
         banner.dataset.detail = detail || msg;
         banner.classList.remove('hidden');
       },
-      switchTab(tabName) {
-        document.querySelectorAll('.nav-tab').forEach(btn => {
+     switchTab(tabName) {
+        if (!tabName) return;
+        document.querySelectorAll('.main-nav .nav-tab').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.tab === tabName);
         });
         document.querySelectorAll('.tab-panel').forEach(panel => {
@@ -649,7 +650,7 @@ openDrawer() {
 
     // Basic Shell Interactions (active immediately in Step 1)
     document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.nav-tab').forEach(btn => {
+      document.querySelectorAll('.main-nav .nav-tab').forEach(btn => {
         btn.addEventListener('click', () => window.ReadingApp.switchTab(btn.dataset.tab));
       });
       document.getElementById('btn-profile-switcher').addEventListener('click', () => window.ReadingApp.openDrawer());
