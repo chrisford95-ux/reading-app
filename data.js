@@ -25,8 +25,12 @@
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">${inner}</svg>`);
   }
 
-  function generateSafeCode(used) {
-    const letters = 'bcdfghjkmnprstvwxyz', digits = '2345678';
+  function generateSafeCode(used, forbidden) {
+    const allLetters = 'bcdfghjkmnprstvwxyz';
+    const digits = '2345678';
+    const blocked = forbidden instanceof Set ? forbidden : new Set();
+    const pool = [...allLetters].filter(ch => !blocked.has(ch));
+    const letters = pool.length ? pool : [...allLetters];
     for (let i = 0; i < 200; i++) {
       const c = letters[Math.floor(Math.random() * letters.length)] + digits[Math.floor(Math.random() * digits.length)];
       if (!used.has(c)) { used.add(c); return c; }
