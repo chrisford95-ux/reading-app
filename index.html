@@ -517,25 +517,57 @@
   </div>
 
   <!-- ==================== MODAL: VISUAL PREFLIGHT SWAP PICKER ==================== -->
+<!-- ==================== MODAL: VISUAL PREFLIGHT SWAP PICKER ==================== -->
   <div id="modal-image-picker" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-card">
+    <div class="modal-card modal-lg">
       <div class="modal-header">
         <h2 id="image-picker-title">Swap Visual</h2>
         <button class="btn btn-ghost modal-close" data-close="modal-image-picker">✕</button>
       </div>
       <div class="modal-body">
-        <div class="field">
-          <label for="image-picker-search">Search ARASAAC / OpenMoji Keyword</label>
+        <div class="field" style="margin-bottom:0.65rem;">
+          <label for="image-picker-search">Search Keyword</label>
           <div class="inline-search">
-            <input type="text" id="image-picker-search" placeholder="e.g., baseball bat" />
-            <button id="btn-picker-search" class="btn btn-outline">Search</button>
+            <input type="text" id="image-picker-search" placeholder="e.g., baseball bat, volcano, school bus" />
+            <button id="btn-picker-search" class="btn btn-primary">Search</button>
           </div>
         </div>
-        <div id="image-picker-results" class="picker-grid"></div>
+
+        <div id="picker-source-tabs" style="display:flex;gap:4px;background:var(--surface-alt);padding:4px;border-radius:10px;margin-bottom:0.75rem;">
+          <button type="button" class="nav-tab active" data-source="aac" style="flex:1;padding:0.4rem;">AAC Symbols</button>
+          <button type="button" class="nav-tab" data-source="web" style="flex:1;padding:0.4rem;">Web Photos (Free)</button>
+          <button type="button" class="nav-tab" data-source="pixabay" style="flex:1;padding:0.4rem;">Pixabay Clipart/Photos</button>
+        </div>
+
+        <div id="picker-pixabay-bar" class="hidden" style="background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:0.65rem;margin-bottom:0.75rem;">
+          <div class="form-grid" style="align-items:end;">
+            <div class="field" style="margin:0;">
+              <label for="picker-pixabay-key">Pixabay Free API Key (<a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">get free key</a>)</label>
+              <input type="password" id="picker-pixabay-key" placeholder="Saved locally in this browser only..." />
+            </div>
+            <div class="field" style="margin:0;">
+              <label for="picker-pixabay-type">Image Style</label>
+              <select id="picker-pixabay-type">
+                <option value="illustration">Illustrations / Clipart</option>
+                <option value="vector">Vectors</option>
+                <option value="photo">Photos</option>
+                <option value="all">All Styles</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="image-picker-results" class="picker-grid" style="max-height:300px;overflow-y:auto;padding-right:4px;"></div>
+
         <hr class="divider" />
-        <div class="field">
-          <label for="image-picker-upload">Or Upload Custom Photo (Offline Base64)</label>
-          <input type="file" id="image-picker-upload" accept="image/*" />
+        <div class="form-grid" style="align-items:center;">
+          <div class="field" style="margin:0;">
+            <label for="image-picker-upload">Upload Photo (Offline Base64)</label>
+            <input type="file" id="image-picker-upload" accept="image/*" />
+          </div>
+          <div style="border:2px dashed var(--border);border-radius:10px;padding:0.6rem 0.75rem;text-align:center;font-size:0.84rem;color:var(--text-muted);">
+            <strong>Fast Escape Hatch:</strong> Right-click <em>Copy Image</em> in any browser tab, then press <code>Cmd+V</code> / <code>Ctrl+V</code> right here.
+          </div>
         </div>
       </div>
       <div class="modal-footer">
