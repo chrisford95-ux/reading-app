@@ -166,6 +166,7 @@
 
             <div class="button-row">
               <button id="btn-copy-prompt" class="btn btn-primary">Copy AI Prompt to Clipboard</button>
+              <button id="btn-create-manual" class="btn btn-outline">Create Manually</button>
             </div>
 
             <details class="byok-drawer">
@@ -209,21 +210,42 @@
           </div>
         </div>
 
-        <!-- Visual Preflight & Swap Gate (Populated in Step 4: visuals.js) -->
+        <!-- Visual Preflight & Inline Lesson Editor (Step 4: visuals.js) -->
         <section id="preflight-section" class="card hidden" style="margin-top:1.5rem;">
           <div class="panel-header">
             <div>
-              <h2>3. Visual Preflight &amp; Swap Gate</h2>
-              <p class="subtitle">Verify each picture before saving. Click any image to swap alternatives, upload a photo, or flip to a code-cued item.</p>
+              <h2>3. Lesson Editor &amp; Visual Preflight</h2>
+              <p class="subtitle">Edit text choices, targets, Teacher Key cues, or click any image to swap before saving.</p>
             </div>
             <div class="header-actions">
               <button id="btn-open-teacher-key" class="btn btn-outline">Preview / Print Teacher Key</button>
               <button id="btn-save-lesson" class="btn btn-success">Save Lesson Offline</button>
             </div>
           </div>
+          <div class="form-grid" style="margin-bottom:1rem;">
+            <div class="field" style="margin:0;">
+              <label for="editor-lesson-title">Lesson Title</label>
+              <input type="text" id="editor-lesson-title" placeholder="e.g., Stage 6: Space &amp; Rockets" />
+            </div>
+            <div class="field" style="margin:0;">
+              <label for="editor-lesson-stage">Phonics Stage</label>
+              <select id="editor-lesson-stage">
+                <option value="stage_1_letters">Stage 1: Letter-Sound</option>
+                <option value="stage_2_cvc_families">Stage 2: CVC Word Families</option>
+                <option value="stage_3_cvc_pairs">Stage 3: CVC Minimal Pairs</option>
+                <option value="stage_4_digraphs">Stage 4: Digraphs</option>
+                <option value="stage_5_blends">Stage 5: Blends</option>
+                <option value="stage_6_cvce">Stage 6: CVCe Silent-E</option>
+                <option value="stage_7_vowel_teams">Stage 7: Vowel Teams &amp; R-Controlled</option>
+                <option value="stage_8_passages">Stage 8: Multisyllabic &amp; Passages</option>
+              </select>
+            </div>
+          </div>
           <div id="preflight-grid" class="preflight-grid"></div>
+          <div class="button-row" style="margin-top:1rem;">
+            <button type="button" id="btn-add-item" class="btn btn-outline">+ Add Item</button>
+          </div>
         </section>
-      </section>
 
       <!-- ==================== TAB 3: LONGITUDINAL IEP REPORTS ==================== -->
       <section id="tab-reports" class="tab-panel">
