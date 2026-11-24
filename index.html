@@ -145,6 +145,14 @@
               </div>
 
               <div class="field">
+                <label for="builder-readaloud-style">Read-Aloud Script Style</label>
+                <select id="builder-readaloud-style">
+                  <option value="whole_word_context" selected>Whole Word + Context (Sound out if prompting)</option>
+                  <option value="sound_out_each">Teacher Sounds Out Each Word Immediately</option>
+                </select>
+              </div>
+
+              <div class="field">
                 <label for="builder-count">Item Count</label>
                 <select id="builder-count">
                   <option value="5">5 Items (Quick Probe)</option>
@@ -529,7 +537,7 @@
         <button class="btn btn-ghost modal-close" data-close="modal-teacher-key">✕</button>
       </div>
       <div class="modal-body">
-        <p class="hint no-print">Sorted alphabetically by opaque screen code so you can look up randomized items instantly.</p>
+        <p class="hint no-print">Match the 2-character code in the top-left corner of the screen (like <code>k4</code>) to the A–Z list below. Read only the words inside quotes.</p>
         <pre id="teacher-key-output" class="teacher-key-pre"></pre>
       </div>
       <div class="modal-footer no-print">
