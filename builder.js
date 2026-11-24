@@ -54,10 +54,18 @@
     const stageId = document.getElementById('builder-stage')?.value || 'stage_6_cvce';
     const stageName = App.STAGE_META?.[stageId]?.name || stageId;
     const modality = document.getElementById('builder-modality')?.value || 'hybrid_auto';
+    const styleEl = document.getElementById('builder-readaloud-style');
+    if (styleEl) styleEl.disabled = modality === 'independent_visual_only';
+    const readAloudStyle = styleEl?.value || 'whole_word_context';
     const count = document.getElementById('builder-count')?.value || '10';
     const interest = (document.getElementById('builder-interest')?.value || '').trim() || 'everyday favorites';
     const notes = (document.getElementById('builder-notes')?.value || '').trim();
     const rules = STAGE_RULES[stageId] || STAGE_RULES.stage_6_cvce;
+
+    const readAloudRule =
+      readAloudStyle === 'sound_out_each'
+        ? `   - Stages 2-7 Read-Aloud ("teacher_spoken_to_word"): Write exact spoken quote sounding out the word immediately: "Find '[word].' /[s1]/, /[s2]/, /[s3]/."`
+        : `   - Stages 2-7 Read-Aloud ("teacher_spoken_to_word"): Write exact spoken quote with whole word and short context sentence, followed by this exact parenthetical: "Find '[word].' [Short context sentence.]" (If prompting press "P" and say "/[s1]/, /[s2]/, /[s3]/.")`;
 
     const prompt = `SYSTEM ROLE:
 You are a structured-literacy assessment designer for non-verbal readers (modeled on Tobii Dynavox ALL). Design receptive field-of-3 tasks where students demonstrate decoding and comprehension without speaking or writing.
@@ -79,7 +87,14 @@ GLOBAL CLINICAL & VISUAL RULES:
    - "hybrid_auto": Route concrete nouns to "picture_to_word" or "word_to_picture"; route verbs/adjectives/abstract minimal pairs to "teacher_spoken_to_word".
 3. VISUAL DISTINCTNESS & SENSE HINTS: Never assign "word_to_picture" if 2+ choices look visually similar (e.g., cap/hat or mug/cup); switch those to "picture_to_word" or "teacher_spoken_to_word". Whenever an image is used, set "imageKeyword" to 1 concrete singular English noun and add "senseHint" (e.g., "baseball equipment") + "excludeHint" (e.g., "flying mammal") to disambiguate homographs.
 4. INTEREST INTEGRATION: Weave "${interest}" into targets or sentences ONLY when words strictly obey the Target Stage phonics scope.
-5. TEACHER CUE: Include "teacherScript" with the target word or phoneme, segmented sounds, and a brief context sentence. Do NOT invent Key Codes—the app assigns randomized Key Codes automatically on import.
+5. VERBATIM SPOKEN SCRIPTS ("teacherScript"): Write plain, student-friendly quotes that any teacher, paraprofessional, or parent can read aloud word-for-word. Do NOT invent Key Codes (the app assigns randomized 2-character codes automatically). Use readable sound notation (e.g., /a/ or /ā/ (long A), never underscores like /a_e/).
+   - Stage 1 Read-Aloud (Letter/Phoneme): Use "Which letter says /[sound]/, like in '[anchor]'?" or "Which word starts with /[sound]/, like '[anchor]'?" or "Which word has the /[sound]/ sound in the middle, like '[anchor]'?" or "Which word ends with /[sound]/, like '[anchor]'?". CRITICAL: The anchor word MUST be a familiar off-screen word that is NOT one of the 3 choices.
+${readAloudRule}
+   - Visual "picture_to_word": "Look at the picture. Find the matching word." (Do not read the choices aloud.)
+   - Visual "word_to_picture": "Read the word at the top, then pick the matching picture." (Do not read the word aloud.)
+   - Stage 8 "cloze_sentence": "Read the sentence and pick the word that fits the blank." (Do not read aloud.)
+   - Stage 8 "passage_comprehension": "Read the story and pick the answer to the question." (Do not read aloud.)
+
 OUTPUT FORMAT:
 Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this schema:
 {
@@ -96,7 +111,7 @@ Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this sc
       "promptImageKeyword": "bat",
       "promptSenseHint": "baseball wooden bat",
       "promptExcludeHint": "animal mammal",
-      "teacherScript": "Target: 'bat' | /b/ - /a/ - /t/ | Context: 'Swing the bat.'",
+      "teacherScript": "\\"Look at the picture. Find the matching word.\\" (Do not read the choices aloud.)",
       "choices": [
         { "label": "bat", "imageKeyword": null, "senseHint": null, "isTarget": true, "errorTag": null },
         { "label": "hat", "imageKeyword": null, "senseHint": null, "isTarget": false, "errorTag": "initial_consonant_sub" },
@@ -110,7 +125,7 @@ Return ONLY raw, valid JSON (no markdown fences, no commentary) matching this sc
     if (preview) preview.value = prompt;
     return prompt;
   }
-
+   
   /* -------------------- STRICT JSON VALIDATOR & SANITIZER -------------------- */
   function extractJsonString(raw) {
     let text = String(raw || '').trim();
@@ -327,7 +342,7 @@ const forbidden = new Set();
 
   function cleanForSave(draft) {
     const copy = JSON.parse(JSON.stringify(draft));
-    copy.lessonMeta.isStarter = false;
+    copy.lessonMeta.userEdited = true;
     copy.lessonMeta.title = String(copy.lessonMeta.title || 'Custom Lesson').trim() || 'Custom Lesson';
     copy.items.forEach(it => {
       it.choices.forEach(c => {
@@ -404,7 +419,7 @@ const forbidden = new Set();
       if (saved?.apiKey && document.getElementById('byok-api-key')) document.getElementById('byok-api-key').value = saved.apiKey;
     } catch (_) {}
 
-    ['builder-stage', 'builder-modality', 'builder-count', 'builder-interest', 'builder-notes'].forEach(id => {
+    ['builder-stage', 'builder-modality', 'builder-readaloud-style', 'builder-count', 'builder-interest', 'builder-notes'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', buildMasterPrompt);
       document.getElementById(id)?.addEventListener('change', buildMasterPrompt);
     });
