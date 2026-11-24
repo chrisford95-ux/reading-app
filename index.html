@@ -622,7 +622,7 @@
         banner.dataset.detail = detail || msg;
         banner.classList.remove('hidden');
       },
-     switchTab(tabName) {
+    switchTab(tabName) {
         if (!tabName) return;
         document.querySelectorAll('.main-nav .nav-tab').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.tab === tabName);
