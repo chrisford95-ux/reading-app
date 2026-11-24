@@ -274,26 +274,29 @@ textarea { resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, m
 .student-player {
   position: fixed;
   inset: 0;
+  height: 100vh;
   height: 100dvh;
+  overflow: hidden;
   background: var(--bg);
   z-index: 100;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 0.75rem 1.5rem 1.25rem;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem max(0.75rem, env(safe-area-inset-bottom));
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
 }
 
 .player-topbar {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 36px;
+  height: 34px;
 }
 
-/* Discreet Opaque Item Code (x73) */
+/* Discreet Opaque Item Code */
 .item-code-tag {
   background: transparent;
   border: none;
@@ -323,57 +326,103 @@ textarea { resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, m
 .badge-slate { background: var(--surface-alt); color: var(--text-muted); border: 1px solid var(--border); }
 
 .player-prompt-area {
+  flex: 0 1 auto;
   text-align: center;
-  margin: 0.5rem auto;
+  margin: 0 auto;
   max-width: 900px;
-  padding: 0.75rem 1.25rem;
+  max-height: 30dvh;
+  overflow-y: auto;
+  padding: 0.6rem 1.1rem;
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  font-size: clamp(1.6rem, 3.2vw, 2.75rem);
+  font-size: clamp(1.15rem, min(3vw, 4.5dvh), 2.4rem);
   font-weight: 700;
 }
-.player-prompt-area img { max-height: 22vh; object-fit: contain; display: block; margin: 0 auto; }
 
-/* Field of Three Grid */
+/* Give image prompts generous vertical space on every aspect ratio */
+.player-prompt-area:has(img) {
+  flex: 1.45 1 0;
+  min-height: 0;
+  max-height: 54dvh;
+  width: min(100%, 540px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0.5rem;
+}
+.player-prompt-area img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Field of Three Grid: shrinks inside remaining height so Next Item never clips */
 .choice-grid {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
   gap: var(--card-gap);
   align-items: center;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  padding: 1rem 0;
+  padding: 8px 6px;
+}
+
+/* Keep word-choice row compact underneath a picture prompt */
+.student-player:has(.player-prompt-area:not(.hidden) img) .choice-grid {
+  flex: 0.85 1 0;
 }
 
 .choice-card {
   position: relative;
-  height: min(56vh, 420px);
+  height: 100%;
+  max-height: 400px;
+  min-height: 0;
   background: var(--surface);
   border: 4px solid var(--border);
-  border-radius: 22px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1.25rem;
+  gap: 0.5rem;
+  padding: 0.9rem;
   cursor: pointer;
   box-shadow: var(--shadow);
   transition: transform 0.12s ease, opacity 0.25s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
 }
 
+.student-player:has(.player-prompt-area:not(.hidden) img) .choice-card {
+  max-height: 200px;
+}
+
 .choice-card:active { transform: scale(0.97); }
 .choice-card-label {
-  font-size: clamp(2.1rem, 4.8vw, 4.4rem);
+  font-size: clamp(1.3rem, min(4.5vw, 8dvh), 4rem);
   font-weight: 700;
   text-align: center;
+  line-height: 1.15;
   word-break: break-word;
 }
-.choice-card-img { max-width: 82%; max-height: 70%; object-fit: contain; pointer-events: none; }
+.student-player:has(.player-prompt-area:not(.hidden) img) .choice-card-label {
+  font-size: clamp(1.15rem, min(3.8vw, 6dvh), 2.8rem);
+}
+.choice-card-img {
+  max-width: 88%;
+  max-height: 82%;
+  min-height: 0;
+  object-fit: contain;
+  pointer-events: none;
+}
 
 /* Practice Mode: 1st Miss Dim & Gentle Shake */
 .choice-card.card-dimmed {
@@ -385,20 +434,20 @@ textarea { resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, m
 /* Practice Mode: 2nd Miss Green Errorless Highlight */
 .choice-card.card-hint-correct {
   border-color: var(--success) !important;
-  border-width: 8px;
-  box-shadow: 0 0 0 8px var(--success-glow);
-  transform: scale(1.03);
+  border-width: 6px;
+  box-shadow: 0 0 0 6px var(--success-glow);
+  transform: scale(1.02);
 }
 
 /* Switch Scanning Focus Ring */
 .choice-card.card-scan-focus {
   border-color: var(--focus-ring) !important;
-  border-width: 8px;
-  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.25);
+  border-width: 6px;
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.25);
   transform: scale(1.02);
 }
 body.cvi-dark .choice-card.card-scan-focus {
-  box-shadow: 0 0 0 8px rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 0 6px rgba(250, 204, 21, 0.45);
 }
 
 /* Eye-Gaze Dwell Perimeter SVG Ring */
@@ -417,15 +466,20 @@ body.cvi-dark .choice-card.card-scan-focus {
   ry: 20;
 }
 
-.player-advance-bar { text-align: center; padding-bottom: 0.5rem; }
+.player-advance-bar {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 0.15rem 0;
+}
 
 /* Bottom Progress Bar / Dots */
 .progress-track {
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  padding: 0.4rem 0;
+  padding: 0.25rem 0;
 }
 .progress-dot {
   width: 14px;
@@ -520,7 +574,16 @@ body.cvi-dark .choice-card.card-scan-focus {
 
 @media (max-width: 720px) {
   .choice-grid { gap: 12px; }
-  .choice-card { height: 42vh; padding: 0.75rem; }
+  .choice-card { padding: 0.65rem; }
+}
+
+@media (max-height: 540px) {
+  .student-player { padding: 0.35rem 1rem max(0.45rem, env(safe-area-inset-bottom)); gap: 0.3rem; }
+  .player-topbar { height: 28px; }
+  .choice-grid { gap: 12px; padding: 4px; }
+  .choice-card { border-radius: 14px; border-width: 3px; padding: 0.45rem; }
+  .player-advance-bar .btn-lg { padding: 0.45rem 1.25rem; font-size: 0.95rem; }
+  .progress-track { padding: 0.1rem 0; }
 }
 /* Lock main page behind open drawer and force drawer above sticky topbar */
 body.drawer-open .teacher-hub {
