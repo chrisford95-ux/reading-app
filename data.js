@@ -254,6 +254,7 @@ function loadInitialState() {
             <button class="btn btn-primary btn-sm action-launch">Launch</button>
             <button class="btn btn-outline btn-sm action-key">Teacher Key</button>
             <button class="btn btn-ghost btn-sm action-export">Export</button>
+            ${m.isStarter ? '' : '<button class="btn btn-outline btn-sm action-edit">Edit</button>'}
             ${m.isStarter ? '' : '<button class="btn btn-ghost btn-sm text-danger action-delete">Delete</button>'}
           </div>
         </article>`;
@@ -269,6 +270,9 @@ function loadInitialState() {
       card.querySelector('.action-key')?.addEventListener('click', () => openTeacherKey(lesson));
       card.querySelector('.action-export')?.addEventListener('click', () => {
         downloadJson(lesson, (lesson.lessonMeta.title || 'lesson').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '.json');
+      });
+      card.querySelector('.action-edit')?.addEventListener('click', () => {
+        if (App.Builder?.editLesson) App.Builder.editLesson(lesson);
       });
       card.querySelector('.action-delete')?.addEventListener('click', () => {
         if (!confirm(`Delete "${lesson.lessonMeta.title}"?`)) return;
