@@ -296,20 +296,101 @@ const forbidden = new Set();
     }
   }
 
-  /* -------------------- VALIDATE & SAVE HANDLERS -------------------- */
+  /* -------------------- VALIDATE, MANUAL CREATE, EDIT, & SAVE -------------------- */
+  const DEFAULT_TAG_BY_STAGE = {
+    stage_1_letters: 'phoneme_voicing_or_manner',
+    stage_2_cvc_families: 'initial_consonant_sub',
+    stage_3_cvc_pairs: 'medial_short_vowel_sub',
+    stage_4_digraphs: 'digraph_to_single_consonant',
+    stage_5_blends: 'blend_consonant_omission',
+    stage_6_cvce: 'silent_e_ignored_short_vowel',
+    stage_7_vowel_teams: 'vowel_team_to_short_vowel',
+    stage_8_passages: 'orthographic_near_miss'
+  };
+
+  function makeBlankItem(stageId, taskType, usedCodes) {
+    const defTag = DEFAULT_TAG_BY_STAGE[stageId] || 'orthographic_near_miss';
+    return {
+      code: App.Data.generateSafeCode(usedCodes || new Set()),
+      taskType: taskType || 'picture_to_word',
+      promptText: null,
+      promptImageKeyword: null,
+      promptImageData: null,
+      teacherScript: '',
+      choices: [
+        { label: '', imageKeyword: null, imageData: null, isTarget: true, errorTag: null },
+        { label: '', imageKeyword: null, imageData: null, isTarget: false, errorTag: defTag },
+        { label: '', imageKeyword: null, imageData: null, isTarget: false, errorTag: defTag }
+      ]
+    };
+  }
+
+  function cleanForSave(draft) {
+    const copy = JSON.parse(JSON.stringify(draft));
+    copy.lessonMeta.isStarter = false;
+    copy.lessonMeta.title = String(copy.lessonMeta.title || 'Custom Lesson').trim() || 'Custom Lesson';
+    copy.items.forEach(it => {
+      it.choices.forEach(c => {
+        c.label = String(c.label || '').trim() || '?';
+        c.errorTag = c.isTarget ? null : (c.errorTag || DEFAULT_TAG_BY_STAGE[copy.lessonMeta.stageId] || 'orthographic_near_miss');
+      });
+      if (it.taskType === 'teacher_spoken_to_word') {
+        it.promptText = it.promptImageKeyword = it.promptImageData = null;
+        it.choices.forEach(c => { c.imageKeyword = c.imageData = null; });
+      } else if (it.taskType === 'picture_to_word') {
+        it.promptText = null;
+        it.choices.forEach(c => { c.imageKeyword = c.imageData = null; });
+      } else if (it.taskType === 'word_to_picture' || it.taskType === 'passage_comprehension') {
+        it.promptImageKeyword = it.promptImageData = null;
+      } else if (it.taskType === 'cloze_sentence') {
+        it.promptImageKeyword = it.promptImageData = null;
+        it.choices.forEach(c => { c.imageKeyword = c.imageData = null; });
+      }
+    });
+    return copy;
+  }
+
+  function createManualDraft() {
+    const stageId = document.getElementById('builder-stage')?.value || 'stage_6_cvce';
+    const modality = document.getElementById('builder-modality')?.value || 'hybrid_auto';
+    const theme = (document.getElementById('builder-interest')?.value || '').trim() || 'Custom';
+    const taskType = modality === 'teacher_spoken_only' ? 'teacher_spoken_to_word' : 'picture_to_word';
+    const used = new Set();
+
+    currentDraft = {
+      lessonMeta: {
+        lessonId: 'les_' + Math.random().toString(36).slice(2, 9),
+        title: `${App.STAGE_META?.[stageId]?.short || 'Custom'}: ${theme}`,
+        stageId,
+        modality,
+        interestTheme: theme,
+        isStarter: false,
+        createdAt: new Date().toISOString().slice(0, 10)
+      },
+      items: [makeBlankItem(stageId, taskType, used)]
+    };
+
+    setStatus('ok', 'Manual lesson started. Fill in item details below or click + Add Item.');
+    if (App.Visuals?.openEditor) App.Visuals.openEditor(currentDraft);
+    else renderBasicPreflight(currentDraft);
+  }
+
+  function editLesson(savedLesson) {
+    currentDraft = JSON.parse(JSON.stringify(savedLesson));
+    App.switchTab('builder');
+    setStatus('ok', `Editing "${currentDraft.lessonMeta.title}". Click Save Lesson Offline when finished.`);
+    if (App.Visuals?.openEditor) App.Visuals.openEditor(currentDraft);
+    else renderBasicPreflight(currentDraft);
+  }
+
   async function handleValidateClick() {
     const raw = document.getElementById('builder-json-input')?.value || '';
     try {
-      const { lesson, codeFixes } = validateAndSanitize(raw);
+      const { lesson } = validateAndSanitize(raw);
       currentDraft = lesson;
-      const fixNote = codeFixes > 0 ? ` (${codeFixes} code${codeFixes > 1 ? 's' : ''} auto-sanitized)` : '';
-      setStatus('ok', `Valid lesson: "${lesson.lessonMeta.title}" — ${lesson.items.length} items ready${fixNote}.`);
-
-      if (App.Visuals && typeof App.Visuals.runPreflight === 'function') {
-        await App.Visuals.runPreflight(currentDraft);
-      } else {
-        renderBasicPreflight(currentDraft);
-      }
+      setStatus('ok', `Valid lesson: "${lesson.lessonMeta.title}" — ${lesson.items.length} items ready.`);
+      if (App.Visuals?.runPreflight) await App.Visuals.runPreflight(currentDraft);
+      else renderBasicPreflight(currentDraft);
     } catch (err) {
       currentDraft = null;
       setStatus('err', err.message);
@@ -317,24 +398,20 @@ const forbidden = new Set();
   }
 
   function initBuilder() {
-    // Load saved BYOK preferences if present
     try {
       const saved = JSON.parse(localStorage.getItem(BYOK_KEY) || 'null');
       if (saved?.provider && document.getElementById('byok-provider')) document.getElementById('byok-provider').value = saved.provider;
       if (saved?.apiKey && document.getElementById('byok-api-key')) document.getElementById('byok-api-key').value = saved.apiKey;
     } catch (_) {}
 
-    // Live prompt preview updates
     ['builder-stage', 'builder-modality', 'builder-count', 'builder-interest', 'builder-notes'].forEach(id => {
       document.getElementById(id)?.addEventListener('input', buildMasterPrompt);
       document.getElementById(id)?.addEventListener('change', buildMasterPrompt);
     });
     buildMasterPrompt();
 
-    // Copy Prompt button
     document.getElementById('btn-copy-prompt')?.addEventListener('click', () => {
-      const text = buildMasterPrompt();
-      navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(buildMasterPrompt());
       const btn = document.getElementById('btn-copy-prompt');
       if (btn) {
         const orig = btn.textContent;
@@ -343,6 +420,7 @@ const forbidden = new Set();
       }
     });
 
+    document.getElementById('btn-create-manual')?.addEventListener('click', createManualDraft);
     document.getElementById('btn-generate-api')?.addEventListener('click', generateViaApi);
     document.getElementById('btn-validate-json')?.addEventListener('click', handleValidateClick);
 
@@ -359,9 +437,10 @@ const forbidden = new Set();
     });
 
     document.getElementById('btn-save-lesson')?.addEventListener('click', () => {
-      if (!currentDraft) return setStatus('err', 'Validate a lesson first before saving.');
-      App.Data.saveLesson(currentDraft);
-      setStatus('ok', `Saved "${currentDraft.lessonMeta.title}" to your Lesson Library!`);
+      if (!currentDraft || !currentDraft.items.length) return setStatus('err', 'Create or validate at least 1 item before saving.');
+      const cleaned = cleanForSave(currentDraft);
+      App.Data.saveLesson(cleaned);
+      setStatus('ok', `Saved "${cleaned.lessonMeta.title}" to your Lesson Library!`);
       App.switchTab('lessons');
     });
   }
@@ -369,10 +448,13 @@ const forbidden = new Set();
   /* -------------------- PUBLIC API -------------------- */
   App.Builder = {
     STAGE_RULES,
+    DEFAULT_TAG_BY_STAGE,
     buildMasterPrompt,
     validateAndSanitize,
+    makeBlankItem,
+    editLesson,
     getDraft: () => currentDraft,
-    setDraft: (d) => { currentDraft = d; }
+    setDraft: d => { currentDraft = d; }
   };
 
   App.modulesLoaded.builder = true;
