@@ -246,11 +246,11 @@
 
     // Prompt Area (hidden for pure Teacher Read-Aloud Key Code items)
     const promptArea = document.getElementById('player-prompt-area');
-    if (promptArea) {
-      if (item.promptImageData) {
+     if (promptArea) {
+      if (item.taskType === 'picture_to_word' && item.promptImageData) {
         promptArea.innerHTML = `<img src="${item.promptImageData}" alt="Prompt visual" />`;
         promptArea.classList.remove('hidden');
-      } else if (item.promptText) {
+      } else if (item.taskType !== 'teacher_spoken_to_word' && item.promptText) {
         const isPassage = item.promptText.length > 36;
         promptArea.innerHTML = `<div style="${isPassage ? 'font-size:clamp(1.25rem,2.4vw,1.9rem);line-height:1.45;font-weight:600;' : ''}">${escapeHtml(item.promptText)}</div>`;
         promptArea.classList.remove('hidden');
@@ -271,7 +271,8 @@
       grid.innerHTML = session.choices
         .map((c, idx) => {
           // Picture choices hide text labels to prevent word-matching shortcuts
-          const inner = c.imageData
+          const showChoiceImg = item.taskType !== 'teacher_spoken_to_word' && item.taskType !== 'picture_to_word' && c.imageData;
+          const inner = showChoiceImg
             ? `<img src="${c.imageData}" alt="${escapeHtml(c.label)}" class="choice-card-img" />`
             : `<span class="choice-card-label">${escapeHtml(c.label)}</span>`;
           const dwellSvg = isDwell
