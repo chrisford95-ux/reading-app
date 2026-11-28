@@ -307,7 +307,7 @@
           </div>
           ${visualBlock}
           ${choiceRows}
-          <input type="text" class="editor-cue-input cue-in" value="${escapeHtml(item.teacherScript || '')}" placeholder="Teacher Key cue (target, sounds, sentence)..." />
+          <input type="text" class="editor-cue-input cue-in" value="${escapeHtml(item.teacherScript || '')}" placeholder="What to say (e.g., &quot;Find 'bug.' /b/, /u/, /g/.&quot;)" />
           <details class="tag-drawer"><summary>Error Tags</summary><div class="tag-drawer-body">${tagRows}</div></details>
         </div>`;
     }).join('');
