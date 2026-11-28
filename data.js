@@ -78,60 +78,60 @@
     };
   }
   function mkLesson(id, title, stageId, theme, items) {
-    return { lessonMeta: { lessonId: id, title, stageId, modality: 'hybrid_auto', interestTheme: theme, isStarter: true, createdAt: '2026-11-20' }, items };
+    return { lessonMeta: { lessonId: id, title, stageId, modality: 'hybrid_auto', interestTheme: theme, isStarter: true, scriptVersion: 2, createdAt: '2026-11-20' }, items };
   }
 
   /* -------------------- 8 PRE-LOADED STARTER LESSONS -------------------- */
   const STARTER_LESSONS = [
-    mkLesson('starter_stage_1', 'Stage 1 Starter: Initial Sounds (m, s, p, h)', 'stage_1_letters', 'animals & nature', [
-      mkItem('b42', 'teacher_spoken_to_word', "Say isolated phoneme: /m/ (as in 'map')", [mkChoice('m', 1), mkChoice('s', 0, 'phoneme_voicing_or_manner'), mkChoice('t', 0, 'unrelated_consonant')]),
-      mkItem('f28', 'word_to_picture', "Visual initial-sound match: 's' -> sun", [mkChoice('sun', 1, null, 'sun'), mkChoice('pig', 0, 'unrelated_consonant', 'pig'), mkChoice('hat', 0, 'unrelated_consonant', 'hat')], { promptText: 's' }),
-      mkItem('k65', 'teacher_spoken_to_word', "Say isolated phoneme: /p/ (as in 'pig')", [mkChoice('p', 1), mkChoice('f', 0, 'phoneme_voicing_or_manner'), mkChoice('c', 0, 'unrelated_consonant')]),
-      mkItem('r83', 'picture_to_word', "Initial sound of picture 'hat' -> h", [mkChoice('h', 1), mkChoice('r', 0, 'unrelated_consonant'), mkChoice('w', 0, 'unrelated_consonant')], { promptImg: 'hat' })
+    mkLesson('starter_stage_1', 'Stage 1 Sample: Initial Sounds (m, s, p, h)', 'stage_1_letters', 'animals & nature', [
+      mkItem('b4', 'teacher_spoken_to_word', '"Which letter says /m/, like in \'map\'?"', [mkChoice('m', 1), mkChoice('s', 0, 'phoneme_voicing_or_manner'), mkChoice('t', 0, 'unrelated_consonant')]),
+      mkItem('f2', 'word_to_picture', '"Look at the letter at the top. Pick the picture that starts with that sound." (Do not read the choices aloud.)', [mkChoice('sun', 1, null, 'sun'), mkChoice('pig', 0, 'unrelated_consonant', 'pig'), mkChoice('hat', 0, 'unrelated_consonant', 'hat')], { promptText: 's' }),
+      mkItem('k6', 'teacher_spoken_to_word', '"Which letter says /p/, like in \'pig\'?"', [mkChoice('p', 1), mkChoice('f', 0, 'phoneme_voicing_or_manner'), mkChoice('c', 0, 'unrelated_consonant')]),
+      mkItem('r8', 'picture_to_word', '"Look at the picture. Pick the letter that makes its starting sound." (Do not say the word aloud.)', [mkChoice('h', 1), mkChoice('r', 0, 'unrelated_consonant'), mkChoice('w', 0, 'unrelated_consonant')], { promptImg: 'hat' })
     ]),
-    mkLesson('starter_stage_2', 'Stage 2 Starter: CVC Word Families (-at, -an)', 'stage_2_cvc_families', 'everyday objects', [
-      mkItem('c34', 'picture_to_word', "Target: 'cat' | /k/ - /a/ - /t/", [mkChoice('cat', 1), mkChoice('hat', 0, 'initial_consonant_sub'), mkChoice('mat', 0, 'initial_consonant_sub')], { promptImg: 'cat' }),
-      mkItem('g57', 'word_to_picture', "Silent decode: 'bat' (baseball bat)", [mkChoice('bat', 1, null, 'bat'), mkChoice('cat', 0, 'initial_consonant_sub', 'cat'), mkChoice('hat', 0, 'initial_consonant_sub', 'hat')], { promptText: 'bat' }),
-      mkItem('m72', 'teacher_spoken_to_word', "Target: 'van' | /v/ - /a/ - /n/ | 'Ride in the green van.'", [mkChoice('van', 1), mkChoice('fan', 0, 'initial_consonant_sub'), mkChoice('pan', 0, 'initial_consonant_sub')]),
-      mkItem('x45', 'picture_to_word', "Target: 'mat' | /m/ - /a/ - /t/", [mkChoice('mat', 1), mkChoice('sat', 0, 'initial_consonant_sub'), mkChoice('rat', 0, 'initial_consonant_sub')], { promptImg: 'mat' })
+    mkLesson('starter_stage_2', 'Stage 2 Sample: CVC Word Families (-at, -an)', 'stage_2_cvc_families', 'everyday objects', [
+      mkItem('c3', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('cat', 1), mkChoice('hat', 0, 'initial_consonant_sub'), mkChoice('mat', 0, 'initial_consonant_sub')], { promptImg: 'cat' }),
+      mkItem('g5', 'word_to_picture', '"Read the word at the top, then pick the matching picture." (Do not read the word aloud.)', [mkChoice('bat', 1, null, 'bat'), mkChoice('cat', 0, 'initial_consonant_sub', 'cat'), mkChoice('hat', 0, 'initial_consonant_sub', 'hat')], { promptText: 'bat' }),
+      mkItem('m7', 'teacher_spoken_to_word', '"Find \'van.\' Ride in the green van." (If prompting press "P" and say "/v/, /a/, /n/.")', [mkChoice('van', 1), mkChoice('fan', 0, 'initial_consonant_sub'), mkChoice('pan', 0, 'initial_consonant_sub')]),
+      mkItem('x4', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('mat', 1), mkChoice('sat', 0, 'initial_consonant_sub'), mkChoice('rat', 0, 'initial_consonant_sub')], { promptImg: 'mat' })
     ]),
-    mkLesson('starter_stage_3', 'Stage 3 Starter: CVC Medial & Final Minimal Pairs', 'stage_3_cvc_pairs', 'bugs & pets', [
-      mkItem('d26', 'picture_to_word', "Target: 'bug' | /b/ - /u/ - /g/ (Medial vowel)", [mkChoice('bug', 1), mkChoice('bag', 0, 'medial_short_vowel_sub'), mkChoice('big', 0, 'medial_short_vowel_sub')], { promptImg: 'bug' }),
-      mkItem('h48', 'picture_to_word', "Target: 'cap' | /k/ - /a/ - /p/ (Final consonant)", [mkChoice('cap', 1), mkChoice('cab', 0, 'final_consonant_sub'), mkChoice('cat', 0, 'final_consonant_sub')], { promptImg: 'cap' }),
-      mkItem('p63', 'teacher_spoken_to_word', "Target: 'dog' | /d/ - /o/ - /g/ | 'The brown dog barked.'", [mkChoice('dog', 1), mkChoice('dug', 0, 'medial_short_vowel_sub'), mkChoice('dig', 0, 'medial_short_vowel_sub')]),
-      mkItem('t84', 'teacher_spoken_to_word', "Target: 'bus' | /b/ - /u/ - /s/ | 'Get on the school bus.'", [mkChoice('bus', 1), mkChoice('bud', 0, 'final_consonant_sub'), mkChoice('bun', 0, 'final_consonant_sub')])
+    mkLesson('starter_stage_3', 'Stage 3 Sample: CVC Medial & Final Minimal Pairs', 'stage_3_cvc_pairs', 'bugs & pets', [
+      mkItem('d2', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('bug', 1), mkChoice('bag', 0, 'medial_short_vowel_sub'), mkChoice('big', 0, 'medial_short_vowel_sub')], { promptImg: 'bug' }),
+      mkItem('h4', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('cap', 1), mkChoice('cab', 0, 'final_consonant_sub'), mkChoice('cat', 0, 'final_consonant_sub')], { promptImg: 'cap' }),
+      mkItem('p6', 'teacher_spoken_to_word', '"Find \'dog.\' The brown dog barked." (If prompting press "P" and say "/d/, /o/, /g/.")', [mkChoice('dog', 1), mkChoice('dug', 0, 'medial_short_vowel_sub'), mkChoice('dig', 0, 'medial_short_vowel_sub')]),
+      mkItem('t8', 'teacher_spoken_to_word', '"Find \'bus.\' Get on the school bus." (If prompting press "P" and say "/b/, /u/, /s/.")', [mkChoice('bus', 1), mkChoice('bud', 0, 'final_consonant_sub'), mkChoice('bun', 0, 'final_consonant_sub')])
     ]),
-    mkLesson('starter_stage_4', 'Stage 4 Starter: Consonant Digraphs (sh, ch, th, ck)', 'stage_4_digraphs', 'water & animals', [
-      mkItem('b74', 'picture_to_word', "Target: 'ship' | /sh/ - /i/ - /p/", [mkChoice('ship', 1), mkChoice('sip', 0, 'digraph_to_single_consonant'), mkChoice('chip', 0, 'digraph_confusion')], { promptImg: 'ship' }),
-      mkItem('j35', 'picture_to_word', "Target: 'duck' | /d/ - /u/ - /k/", [mkChoice('duck', 1), mkChoice('dug', 0, 'digraph_to_single_consonant'), mkChoice('deck', 0, 'medial_short_vowel_sub')], { promptImg: 'duck' }),
-      mkItem('n52', 'teacher_spoken_to_word', "Target: 'chin' | /ch/ - /i/ - /n/ | 'Touch your chin.'", [mkChoice('chin', 1), mkChoice('tin', 0, 'digraph_to_single_consonant'), mkChoice('thin', 0, 'digraph_confusion')]),
-      mkItem('w68', 'teacher_spoken_to_word', "Target: 'path' | /p/ - /a/ - /th/ | 'Walk on the park path.'", [mkChoice('path', 1), mkChoice('pat', 0, 'digraph_to_single_consonant'), mkChoice('pack', 0, 'digraph_confusion')])
+    mkLesson('starter_stage_4', 'Stage 4 Sample: Consonant Digraphs (sh, ch, th, ck)', 'stage_4_digraphs', 'water & animals', [
+      mkItem('b7', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('ship', 1), mkChoice('sip', 0, 'digraph_to_single_consonant'), mkChoice('chip', 0, 'digraph_confusion')], { promptImg: 'ship' }),
+      mkItem('j3', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('duck', 1), mkChoice('dug', 0, 'digraph_to_single_consonant'), mkChoice('deck', 0, 'medial_short_vowel_sub')], { promptImg: 'duck' }),
+      mkItem('n5', 'teacher_spoken_to_word', '"Find \'chin.\' Touch your chin." (If prompting press "P" and say "/ch/, /i/, /n/.")', [mkChoice('chin', 1), mkChoice('tin', 0, 'digraph_to_single_consonant'), mkChoice('thin', 0, 'digraph_confusion')]),
+      mkItem('w6', 'teacher_spoken_to_word', '"Find \'path.\' Walk on the park path." (If prompting press "P" and say "/p/, /a/, /th/.")', [mkChoice('path', 1), mkChoice('pat', 0, 'digraph_to_single_consonant'), mkChoice('pack', 0, 'digraph_confusion')])
     ]),
-    mkLesson('starter_stage_5', 'Stage 5 Starter: Initial & Final Blends', 'stage_5_blends', 'pond & home', [
-      mkItem('c82', 'picture_to_word', "Target: 'frog' | /f/ - /r/ - /o/ - /g/", [mkChoice('frog', 1), mkChoice('fog', 0, 'blend_consonant_omission'), mkChoice('clog', 0, 'blend_consonant_sub')], { promptImg: 'frog' }),
-      mkItem('k27', 'picture_to_word', "Target: 'lamp' | /l/ - /a/ - /m/ - /p/", [mkChoice('lamp', 1), mkChoice('lap', 0, 'blend_consonant_omission'), mkChoice('limp', 0, 'medial_short_vowel_sub')], { promptImg: 'lamp' }),
-      mkItem('s46', 'teacher_spoken_to_word', "Target: 'stop' | /s/ - /t/ - /o/ - /p/ | 'Red light means stop.'", [mkChoice('stop', 1), mkChoice('top', 0, 'blend_consonant_omission'), mkChoice('spot', 0, 'blend_consonant_sub')]),
-      mkItem('v75', 'teacher_spoken_to_word', "Target: 'clap' | /k/ - /l/ - /a/ - /p/ | 'Clap your hands.'", [mkChoice('clap', 1), mkChoice('cap', 0, 'blend_consonant_omission'), mkChoice('slap', 0, 'blend_consonant_sub')])
+    mkLesson('starter_stage_5', 'Stage 5 Sample: Initial & Final Blends', 'stage_5_blends', 'pond & home', [
+      mkItem('c8', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('frog', 1), mkChoice('fog', 0, 'blend_consonant_omission'), mkChoice('clog', 0, 'blend_consonant_sub')], { promptImg: 'frog' }),
+      mkItem('k2', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('lamp', 1), mkChoice('lap', 0, 'blend_consonant_omission'), mkChoice('limp', 0, 'medial_short_vowel_sub')], { promptImg: 'lamp' }),
+      mkItem('s4', 'teacher_spoken_to_word', '"Find \'stop.\' A red light means stop." (If prompting press "P" and say "/s/, /t/, /o/, /p/.")', [mkChoice('stop', 1), mkChoice('top', 0, 'blend_consonant_omission'), mkChoice('spot', 0, 'blend_consonant_sub')]),
+      mkItem('v7', 'teacher_spoken_to_word', '"Find \'clap.\' Clap your hands." (If prompting press "P" and say "/k/, /l/, /a/, /p/.")', [mkChoice('clap', 1), mkChoice('cap', 0, 'blend_consonant_omission'), mkChoice('slap', 0, 'blend_consonant_sub')])
     ]),
-    mkLesson('starter_stage_6', 'Stage 6 Starter: CVCe Silent-E Long Vowels', 'stage_6_cvce', 'outdoor play', [
-      mkItem('d47', 'picture_to_word', "Target: 'kite' | /k/ - /i_e/ - /t/", [mkChoice('kite', 1), mkChoice('kit', 0, 'silent_e_ignored_short_vowel'), mkChoice('bite', 0, 'cvce_consonant_near_miss')], { promptImg: 'kite' }),
-      mkItem('m38', 'word_to_picture', "Silent decode: 'bike' -> bicycle", [mkChoice('bike', 1, null, 'bike'), mkChoice('kite', 0, 'cvce_consonant_near_miss', 'kite'), mkChoice('bone', 0, 'cvce_consonant_near_miss', 'bone')], { promptText: 'bike' }),
-      mkItem('p85', 'teacher_spoken_to_word', "Target: 'cape' | /k/ - /a_e/ - /p/ | 'The hero wore a red cape.'", [mkChoice('cape', 1), mkChoice('cap', 0, 'silent_e_ignored_short_vowel'), mkChoice('cane', 0, 'cvce_consonant_near_miss')]),
-      mkItem('x73', 'picture_to_word', "Target: 'bone' | /b/ - /o_e/ - /n/", [mkChoice('bone', 1), mkChoice('bon', 0, 'silent_e_ignored_short_vowel'), mkChoice('cone', 0, 'cvce_consonant_near_miss')], { promptImg: 'bone' })
+    mkLesson('starter_stage_6', 'Stage 6 Sample: CVCe Silent-E Long Vowels', 'stage_6_cvce', 'outdoor play', [
+      mkItem('d4', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('kite', 1), mkChoice('kit', 0, 'silent_e_ignored_short_vowel'), mkChoice('bite', 0, 'cvce_consonant_near_miss')], { promptImg: 'kite' }),
+      mkItem('m3', 'word_to_picture', '"Read the word at the top, then pick the matching picture." (Do not read the word aloud.)', [mkChoice('bike', 1, null, 'bike'), mkChoice('kite', 0, 'cvce_consonant_near_miss', 'kite'), mkChoice('bone', 0, 'cvce_consonant_near_miss', 'bone')], { promptText: 'bike' }),
+      mkItem('p8', 'teacher_spoken_to_word', '"Find \'cape.\' The hero wore a red cape." (If prompting press "P" and say "/k/, /ā/ (long A), /p/.")', [mkChoice('cape', 1), mkChoice('cap', 0, 'silent_e_ignored_short_vowel'), mkChoice('cane', 0, 'cvce_consonant_near_miss')]),
+      mkItem('x7', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('bone', 1), mkChoice('bon', 0, 'silent_e_ignored_short_vowel'), mkChoice('cone', 0, 'cvce_consonant_near_miss')], { promptImg: 'bone' })
     ]),
-    mkLesson('starter_stage_7', 'Stage 7 Starter: Vowel Teams & R-Controlled', 'stage_7_vowel_teams', 'weather & travel', [
-      mkItem('f64', 'picture_to_word', "Target: 'rain' | /r/ - /ai/ - /n/", [mkChoice('rain', 1), mkChoice('ran', 0, 'vowel_team_to_short_vowel'), mkChoice('read', 0, 'vowel_pattern_confusion')], { promptImg: 'rain' }),
-      mkItem('h25', 'picture_to_word', "Target: 'boat' | /b/ - /oa/ - /t/", [mkChoice('boat', 1), mkChoice('bat', 0, 'vowel_team_to_short_vowel'), mkChoice('boot', 0, 'vowel_pattern_confusion')], { promptImg: 'boat' }),
-      mkItem('r48', 'picture_to_word', "Target: 'car' | /k/ - /ar/", [mkChoice('car', 1), mkChoice('can', 0, 'vowel_team_to_short_vowel'), mkChoice('core', 0, 'vowel_pattern_confusion')], { promptImg: 'car' }),
-      mkItem('z53', 'teacher_spoken_to_word', "Target: 'corn' | /k/ - /or/ - /n/ | 'We ate sweet corn.'", [mkChoice('corn', 1), mkChoice('con', 0, 'vowel_team_to_short_vowel'), mkChoice('card', 0, 'vowel_pattern_confusion')])
+    mkLesson('starter_stage_7', 'Stage 7 Sample: Vowel Teams & R-Controlled', 'stage_7_vowel_teams', 'weather & travel', [
+      mkItem('f6', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('rain', 1), mkChoice('ran', 0, 'vowel_team_to_short_vowel'), mkChoice('read', 0, 'vowel_pattern_confusion')], { promptImg: 'rain' }),
+      mkItem('h2', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('boat', 1), mkChoice('bat', 0, 'vowel_team_to_short_vowel'), mkChoice('boot', 0, 'vowel_pattern_confusion')], { promptImg: 'boat' }),
+      mkItem('r4', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('car', 1), mkChoice('can', 0, 'vowel_team_to_short_vowel'), mkChoice('core', 0, 'vowel_pattern_confusion')], { promptImg: 'car' }),
+      mkItem('z5', 'teacher_spoken_to_word', '"Find \'corn.\' We ate sweet corn." (If prompting press "P" and say "/k/, /or/, /n/.")', [mkChoice('corn', 1), mkChoice('con', 0, 'vowel_team_to_short_vowel'), mkChoice('card', 0, 'vowel_pattern_confusion')])
     ]),
-    mkLesson('starter_stage_8', 'Stage 8 Starter: Multisyllabic & Decodable Passages', 'stage_8_passages', 'space & vehicles', [
-      mkItem('g36', 'picture_to_word', "Target: 'rocket' | rock-et (2-syllable)", [mkChoice('rocket', 1), mkChoice('rockets', 0, 'affix_or_syllable_error'), mkChoice('pocket', 0, 'orthographic_near_miss')], { promptImg: 'rocket' }),
-      mkItem('n74', 'cloze_sentence', "Silent Cloze: 'The fast rocket went up into space.'", [mkChoice('space', 1), mkChoice('spice', 0, 'orthographic_near_miss'), mkChoice('spin', 0, 'silent_e_ignored_short_vowel')], { promptText: 'The fast rocket went up into ____.' }),
-      mkItem('t28', 'passage_comprehension', "Silent Passage Comprehension -> bus", [mkChoice('bus', 1, null, 'bus'), mkChoice('boat', 0, 'comprehension_detail_error', 'boat'), mkChoice('bike', 0, 'comprehension_detail_error', 'bike')], { promptText: 'Sam got on the big yellow bus. The bus went past the park. What did Sam ride?' }),
-      mkItem('v62', 'passage_comprehension', "Silent Passage Comprehension -> by the pond", [mkChoice('by the pond', 1), mkChoice('in the mud', 0, 'comprehension_detail_error'), mkChoice('on a rock', 0, 'comprehension_detail_error')], { promptText: 'The green frog sat by the pond in the rain. It did not jump in the mud. Where did the frog sit?' })
+    mkLesson('starter_stage_8', 'Stage 8 Sample: Multisyllabic & Decodable Passages', 'stage_8_passages', 'space & vehicles', [
+      mkItem('g3', 'picture_to_word', '"Look at the picture. Find the matching word." (Do not read the choices aloud.)', [mkChoice('rocket', 1), mkChoice('rockets', 0, 'affix_or_syllable_error'), mkChoice('pocket', 0, 'orthographic_near_miss')], { promptImg: 'rocket' }),
+      mkItem('n7', 'cloze_sentence', '"Read the sentence and pick the word that fits the blank." (Do not read aloud.)', [mkChoice('space', 1), mkChoice('spice', 0, 'orthographic_near_miss'), mkChoice('spin', 0, 'silent_e_ignored_short_vowel')], { promptText: 'The fast rocket went up into ____.' }),
+      mkItem('t2', 'passage_comprehension', '"Read the story and pick the answer to the question." (Do not read aloud.)', [mkChoice('bus', 1, null, 'bus'), mkChoice('boat', 0, 'comprehension_detail_error', 'boat'), mkChoice('bike', 0, 'comprehension_detail_error', 'bike')], { promptText: 'Sam got on the big yellow bus. The bus went past the park. What did Sam ride?' }),
+      mkItem('v6', 'passage_comprehension', '"Read the story and pick the answer to the question." (Do not read aloud.)', [mkChoice('by the pond', 1), mkChoice('in the mud', 0, 'comprehension_detail_error'), mkChoice('on a rock', 0, 'comprehension_detail_error')], { promptText: 'The green frog sat by the pond in the rain. It did not jump in the mud. Where did the frog sit?' })
     ])
-  ];STARTER_LESSONS.forEach(l => l.items.forEach(it => { it.code = it.code.slice(0, 2); })); 
+  ];
 
   /* -------------------- STATE & PROFILES -------------------- */
   function createDefaultProfile(code, color, stageId) {
@@ -155,13 +155,12 @@ function loadInitialState() {
     if (saved && Array.isArray(saved.profiles) && saved.profiles.length > 0) {
       if (!Array.isArray(saved.lessons) || !saved.lessons.length) saved.lessons = JSON.parse(JSON.stringify(STARTER_LESSONS));
       if (!Array.isArray(saved.sessions)) saved.sessions = [];
-       saved.lessons.forEach(l => {
-        if (l.lessonMeta?.isStarter) {
-          (l.items || []).forEach(it => {
-            if (typeof it.code === 'string' && it.code.length === 3) it.code = it.code.slice(0, 2);
-          });
-        }
-      });
+       const starterMap = new Map(STARTER_LESSONS.map(l => [l.lessonMeta.lessonId, l]));
+      saved.lessons = saved.lessons.map(l =>
+        l.lessonMeta?.isStarter && !l.lessonMeta?.userEdited && (l.lessonMeta?.scriptVersion || 0) < 2 && starterMap.has(l.lessonMeta.lessonId)
+          ? JSON.parse(JSON.stringify(starterMap.get(l.lessonMeta.lessonId)))
+          : l
+      );
       saved.cviDarkMode = Boolean(saved.cviDarkMode);
       return saved;
     }
@@ -193,20 +192,34 @@ function loadInitialState() {
   }
 
   /* -------------------- TEACHER KEY FORMATTER -------------------- */
+  function defaultSayScript(item, answer) {
+    if (item.taskType === 'picture_to_word') return '"Look at the picture. Find the matching word." (Do not read the choices aloud.)';
+    if (item.taskType === 'word_to_picture') return '"Read the word at the top, then pick the matching picture." (Do not read the word aloud.)';
+    if (item.taskType === 'cloze_sentence') return '"Read the sentence and pick the word that fits the blank." (Do not read aloud.)';
+    if (item.taskType === 'passage_comprehension') return '"Read the story and pick the answer to the question." (Do not read aloud.)';
+    return `"Find '${answer}'."`;
+  }
+
   function formatTeacherKey(lesson) {
     const meta = lesson.lessonMeta || {};
     const sorted = [...(lesson.items || [])].sort((a, b) => String(a.code || '').localeCompare(String(b.code || '')));
     const lines = [
       `TEACHER KEY: ${meta.title || 'Untitled Lesson'}`,
       `Stage: ${STAGE_META[meta.stageId]?.name || meta.stageId || 'Custom'} | Items: ${sorted.length}`,
-     '(Sorted alphabetically by 2-character Key Code for instant randomized lookup)',
-      '--------------------------------------------------------------------------'
+      'How to use: Match the 2-character code in the top-left corner of the screen (like k4) to the list below (sorted A-Z). Read only the words inside quotes.'
     ];
+    if (meta.stageId === 'stage_1_letters') {
+      lines.push('Tip: Say crisp letter sounds (like /m/), not letter names (like "em").');
+    }
+    lines.push('--------------------------------------------------------------------------');
     sorted.forEach(item => {
       const target = (item.choices || []).find(c => c.isTarget);
+      const answer = target?.label || '?';
       const list = (item.choices || []).map(c => c.label).join(', ');
-      lines.push(`[${item.code}]  Target: ${(target?.label || '?').toUpperCase()}  |  Choices: ${list}`);
-      if (item.teacherScript) lines.push(`       Cue: ${item.teacherScript}`);
+      const rawScript = String(item.teacherScript || '').trim().replace(/^(?:say|cue)\s*:\s*/i, '');
+      const sayText = rawScript || defaultSayScript(item, answer);
+      lines.push(`[${item.code}]  Answer: ${answer}  |  Choices: ${list}`);
+      lines.push(`       Say: ${sayText}`);
     });
     lines.push('--------------------------------------------------------------------------');
     return lines.join('\n');
@@ -254,7 +267,7 @@ function loadInitialState() {
             <button class="btn btn-primary btn-sm action-launch">Launch</button>
             <button class="btn btn-outline btn-sm action-key">Teacher Key</button>
             <button class="btn btn-ghost btn-sm action-export">Export</button>
-            ${m.isStarter ? '' : '<button class="btn btn-outline btn-sm action-edit">Edit</button>'}
+            <button class="btn btn-outline btn-sm action-edit">Edit</button>
             ${m.isStarter ? '' : '<button class="btn btn-ghost btn-sm text-danger action-delete">Delete</button>'}
           </div>
         </article>`;
